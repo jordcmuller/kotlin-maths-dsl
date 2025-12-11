@@ -16,5 +16,5 @@ fun main() {
         y eq 1
         x eq y
         x eq 2
-    }
+    }.printErrors()
 }

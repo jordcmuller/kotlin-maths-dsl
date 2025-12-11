@@ -43,7 +43,7 @@ fun Expr.readable(): String = when (this) {
 
 fun Stmt.readable(): String = when (this) {
     is Equation -> "${left.readable()} = ${right.readable()}"
-    is VariableDeclaration -> "let ${this.name}"
+    is VariableDeclaration -> "let ${this.variable.name}"
 }
 
 // Helper for superscript conversion (for readable mode)
