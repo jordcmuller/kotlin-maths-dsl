@@ -79,6 +79,7 @@ class VariableEqualityTests : StringSpec({
         context.state.variableValues["x"] shouldBe Const(2.0)
         context.state.variableValues["y"] shouldBe Const(3.0)
     }
+
     "define x and it should equal itself" {
         val context = maths {
             val x by variable()
@@ -94,5 +95,26 @@ class VariableEqualityTests : StringSpec({
                 Var("x")
             )
         )
+    }
+
+    "A variable should be equal to itself" {
+        maths {
+            val x by variable()
+            (x eq x).equivalence shouldBe Equivalence.True
+        }
+    }
+
+    "An unknown variable equated to another unknown variable should give an unknown result" {
+        maths {
+            val x by variable()
+            val y by variable()
+            (x eq y).equivalence shouldBe Equivalence.Unknown
+        }
+    }
+
+    "Check that the same numeric expression is equal" {
+        maths {
+            (1.c + 2.c eq 1.c + 2.c).equivalence shouldBe Equivalence.True
+        }
     }
 })
