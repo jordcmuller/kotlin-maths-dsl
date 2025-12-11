@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("maven-publish")
+    id("io.kotest") version "6.0.7"
 }
 
 group = "maths.dsl"
@@ -13,7 +14,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation("io.kotest:kotest-framework-engine:6.0.7")
+    testImplementation("io.kotest:kotest-assertions-core:6.0.7")
 }
 
 tasks.test {
