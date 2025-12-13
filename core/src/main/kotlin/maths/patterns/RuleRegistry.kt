@@ -7,6 +7,7 @@ object RuleRegistry {
         // Register built-ins
         register(Commutative, CommutativeMatcher)
         register(Associative, AssociativeMatcher)
+//        register(Identity, IdentityMatcher)
     }
 
     fun register(rule: AlgebraicRule, matcher: RuleMatcher) {

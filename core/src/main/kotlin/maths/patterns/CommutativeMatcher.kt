@@ -3,30 +3,62 @@ package maths.patterns
 import maths.core.ast.*
 
 object CommutativeMatcher : RuleMatcher {
-    override fun matches(pattern: ExprPattern.BinaryPattern, value: BinaryExpr): Boolean {
-        return (pattern.left.accepts(value.left) && pattern.right.accepts(value.right)) ||
-               (pattern.left.accepts(value.right) && pattern.right.accepts(value.left))
+    override fun matches(pattern: BinaryPattern, value: BinaryExpr): Boolean {
+        return pattern.left.accepts(value.right) && pattern.right.accepts(value.left)
     }
 }
 
 object AssociativeMatcher : RuleMatcher {
-    override fun matches(pattern: ExprPattern.BinaryPattern, value: BinaryExpr): Boolean {
-        val patternSet = flattenPattern(pattern, value.operation)
-        val exprSet = flattenExpr(value, value.operation)
-        return exprSet.size == patternSet.size &&
-               exprSet.zip(patternSet).all { (e, p) -> p.accepts(e) }
+    override fun matches(pattern: BinaryPattern, value: BinaryExpr): Boolean {
+        if (pattern.left is BinaryPattern) {
+            val associativePattern = BinaryPattern(
+                pattern.left.left,
+                pattern.left.operation,
+                BinaryPattern(
+                    pattern.left.right,
+                    pattern.operation,
+                    pattern.right
+                )
+            )
+
+            return associativePattern.accepts(value)
+        }
+
+        if (pattern.right is BinaryPattern) {
+            val associativePattern = BinaryPattern(
+                BinaryPattern(
+                    pattern.left,
+                    pattern.operation,
+                    pattern.right.left
+                ),
+                pattern.right.operation,
+                pattern.right.right
+            )
+            return associativePattern.accepts(value)
+        }
+
+        return false
     }
+}
 
-    private fun flattenExpr(expr: Expr, op: Operation): List<Expr> =
-        when (expr) {
-            is BinaryExpr if (expr.operation == op) -> flattenExpr(expr.left, op) + flattenExpr(expr.right, op)
-            else -> listOf(expr)
+object IdentityMatcher : RuleMatcher {
+    val identityElement: Expr = Const(0.0)
+
+    override fun matches(pattern: BinaryPattern, value: BinaryExpr): Boolean {
+        // if x + 0
+        // then match only left
+
+        // if 0 + x
+        // then match only right
+
+        if (pattern.left is ConstantPattern && pattern.left.accepts(identityElement)) {
+            return pattern.right.accepts(value)
         }
 
-    private fun flattenPattern(pattern: ExprPattern, op: Operation): List<ExprPattern> =
-        when (pattern) {
-            is ExprPattern.BinaryPattern if (pattern.operation == op) ->
-                flattenPattern(pattern.left, op) + flattenPattern(pattern.right, op)
-            else -> listOf(pattern)
+        if (pattern.right is ConstantPattern && pattern.right.accepts(identityElement)) {
+            return pattern.left.accepts(value)
         }
+
+        return false
+    }
 }
