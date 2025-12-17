@@ -6,7 +6,7 @@ import maths.core.ast.Stmt
 import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
 import maths.core.format.readable
-import maths.core.verification.CongruenceClosure
+import maths.core.verification.EquivalenceManager
 
 class MathsState {
 
@@ -15,7 +15,10 @@ class MathsState {
     val variableValues = mutableMapOf<String, Const>()
 
     /** Called when a new variable is declared */
-    fun VariableDeclaration.declare() = definedVars.plusAssign(variable.name)
+    fun VariableDeclaration.declare() {
+        definedVars.plusAssign(variable.name)
+        equivalenceManager.declareVariable(variable)
+    }
     val Var.isDeclared get() = definedVars.contains(name)
     fun Var.set(const: Const) = variableValues.put(name, const).also { value = const }
 
@@ -28,7 +31,7 @@ class MathsState {
 
     // Fancy stuff
     val representations = mutableMapOf<String, MutableList<Expr>>()
-    val congruenceClosure = CongruenceClosure()
+    val equivalenceManager = EquivalenceManager()
 
 
 //================================================================================================================

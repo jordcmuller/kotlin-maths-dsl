@@ -15,7 +15,7 @@ enum class Operation(val symbol: String) {
 // ---------------------------
 sealed interface Expr {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Var {
-        return Var(property.name)
+        return Var(property.name) // improve on this
     }
 }
 
@@ -58,7 +58,13 @@ sealed interface Stmt
 // ---------------------------
 // Equation
 // ---------------------------
-data class Equation(val left: Expr, val right: Expr) : Stmt {
+
+sealed interface Proposition : Stmt
+
+data class Implication(val antecedent: Proposition, val consequent: Proposition) : Proposition
+class Therefore : Proposition
+
+data class Equation(val left: Expr, val right: Expr) : Proposition {
     var equivalence = Equivalence.Unknown
     fun normalized(): Expr = Sub(left, right) // canonicalize to single expression for equivalence checks
 }

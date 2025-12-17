@@ -10,6 +10,7 @@ import maths.core.ast.Func
 import maths.core.ast.Mul
 import maths.core.ast.Neg
 import maths.core.ast.Pow
+import maths.core.ast.Proposition
 import maths.core.ast.Stmt
 import maths.core.ast.Sub
 import maths.core.ast.Var
@@ -44,6 +45,7 @@ fun Expr.readable(): String = when (this) {
 fun Stmt.readable(): String = when (this) {
     is Equation -> "${left.readable()} = ${right.readable()}"
     is VariableDeclaration -> "let ${this.variable.name}"
+    is Proposition -> "Proposition $this"
 }
 
 // Helper for superscript conversion (for readable mode)

@@ -17,14 +17,12 @@ fun MathsState.processEquation(equation: Equation) {
     }
 
     if (left is Var && left.isUnknown) {
-        // update variable value
-        left.set(right)
+        equation.equivalence = equivalenceManager.equate(left, right)
         return
     }
 
     if (right is Var && right.isUnknown) {
-        // update variable value
-        right.set(left)
+        equation.equivalence = equivalenceManager.equate(left, right)
         return
     }
 
@@ -34,27 +32,27 @@ fun MathsState.processEquation(equation: Equation) {
 //    if (equation.equivalence == Equivalence.True) TODO("Update congruence closure")
 }
 
-    fun computationallyEquivalent(left: Expr, right: Expr): Boolean {
-        return compute(left) == compute(right)
+fun computationallyEquivalent(left: Expr, right: Expr): Boolean {
+    return compute(left) == compute(right)
+}
+
+private fun checkEquivalence(left: Expr, right: Expr): Equivalence {
+    // TODO: which situations result in unknown equivalence
+
+    if (computationallyEquivalent(left, right)) {
+        return Equivalence.True
     }
 
-    private fun checkEquivalence(left: Expr, right: Expr): Equivalence {
-        // TODO: which situations result in unknown equivalence
-
-        if (computationallyEquivalent(left, right)) {
-            return Equivalence.True
-        }
-
-        if (semanticallyEquivalent(left, right)) {
-            return Equivalence.True
-        }
-
-        return Equivalence.False
+    if (semanticallyEquivalent(left, right)) {
+        return Equivalence.True
     }
 
-    private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
-        return ExprPattern.fromExpr(a).accepts(b)
-    }
+    return Equivalence.False
+}
+
+private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
+    return ExprPattern.fromExpr(a).accepts(b)
+}
 
 //    private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
 //        val leftRepresentations = if (a is Var) getBindings(a).apply { add(a) } else setOf(a)
