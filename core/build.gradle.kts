@@ -8,19 +8,22 @@ plugins {
 
 group = "maths.dsl"
 version = "1.0-SNAPSHOT"
+val kotestVersion = "6.0.7"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation("io.kotest:kotest-framework-engine:6.0.7")
-    testImplementation("io.kotest:kotest-assertions-core:6.0.7")
+    testImplementation("io.kotest:kotest-framework-engine:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
 }
