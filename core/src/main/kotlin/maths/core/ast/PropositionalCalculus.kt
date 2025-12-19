@@ -2,8 +2,7 @@ package maths.core.ast
 
 interface Proposition: Stmt
 
-interface PropositionAtom: Proposition
-class BasicEquation: PropositionAtom
+class BasicEquation: Proposition
 
 data class And(val left: Proposition, val right: Proposition): Proposition
 data class Or(val left: Proposition, val right: Proposition): Proposition
