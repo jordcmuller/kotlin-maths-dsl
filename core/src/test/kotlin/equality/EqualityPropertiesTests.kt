@@ -6,7 +6,7 @@ import maths.core.ast.Add
 import maths.core.ast.Const
 import maths.core.ast.Equation
 import maths.core.dsl.maths
-import maths.core.state.Equivalence
+import maths.core.ast.Equivalence
 
 class EqualityPropertiesTests : StringSpec({
     "Equality is reflexive: For every x, one has x = x." {

@@ -1,4 +1,4 @@
-package maths.core.state
+package maths.core.ast
 
 enum class Equivalence {
     Unknown,

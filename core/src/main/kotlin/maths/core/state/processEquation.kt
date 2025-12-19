@@ -1,6 +1,7 @@
 package maths.core.state
 
 import maths.core.ast.Equation
+import maths.core.ast.Equivalence
 import maths.core.ast.Expr
 import maths.core.ast.Var
 import maths.patterns.ExprPattern

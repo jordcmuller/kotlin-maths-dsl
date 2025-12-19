@@ -23,11 +23,12 @@ fun Expr.latex(): String = when (this) {
     is Add -> "${left.latex()} + ${right.latex()}"
     is Mul -> "${left.latex()} ${right.latex()}"
     is Pow -> "{${base.latex()}}^{${exp.latex()}}"
-    is BinaryExpr -> TODO()
     is Div -> TODO()
+    is Sub -> TODO()
+    is BinaryExpr -> TODO()
     is Func -> TODO()
     is Neg -> TODO()
-    is Sub -> TODO()
+    else -> TODO("else branch")
 }
 
 fun Equation.latex(): String = "${left.latex()} = ${right.latex()}"

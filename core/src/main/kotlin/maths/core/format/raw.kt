@@ -25,6 +25,7 @@ fun Expr.raw(): String = when (this) {
     is BinaryExpr -> TODO()
     is Neg -> "(-${child.raw()})"
     is Func -> TODO()
+    else -> TODO("else branch")
 }
 
 fun Equation.raw(): String = "${left.raw()} = ${right.raw()}"

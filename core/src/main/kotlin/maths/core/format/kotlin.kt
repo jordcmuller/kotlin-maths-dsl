@@ -12,11 +12,12 @@ fun Expr.printKotlin(): String = when (this) {
     is Add -> "${left.latex()} + ${right.latex()}"
     is Mul -> "${left.latex()} * ${right.latex()}"
     is Div -> "${left.latex()} / ${right.latex()}"
+    is Sub -> TODO()
     is BinaryExpr -> TODO()
     is Pow -> "{${base.latex()}} pow {${exp.latex()}}" // what to do when squared?
     is Func -> TODO()
     is Neg -> TODO()
-    is Sub -> TODO()
+    else -> TODO()
 }
 
 fun Equation.printKotlin(): String = "${left.latex()} eq ${right.latex()}"

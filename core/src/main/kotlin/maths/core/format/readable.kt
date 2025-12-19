@@ -40,6 +40,7 @@ fun Expr.readable(): String = when (this) {
 
     is Neg -> "-${child.readable()}"
     is Func -> TODO()
+    else -> TODO("else branch")
 }
 
 fun Stmt.readable(): String = when (this) {

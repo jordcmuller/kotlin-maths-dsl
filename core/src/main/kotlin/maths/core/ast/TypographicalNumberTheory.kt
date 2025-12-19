@@ -1,22 +1,10 @@
 package maths.core.ast
 
-import maths.core.state.Equivalence
-import kotlin.reflect.KProperty
-
 enum class Operation(val symbol: String) {
     ADD("+"),
     MUL("*"),
     SUB("-"),
     DIV("/")
-}
-
-// ---------------------------
-// AST
-// ---------------------------
-sealed interface Expr {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): Var {
-        return Var(property.name) // improve on this
-    }
 }
 
 //@JvmInline
@@ -55,14 +43,6 @@ class Func(val name: String, val arg: Expr) : Expr
 
 
 sealed interface Stmt
-// ---------------------------
-// Equation
-// ---------------------------
-
-sealed interface Proposition : Stmt
-
-data class Implication(val antecedent: Proposition, val consequent: Proposition) : Proposition
-class Therefore : Proposition
 
 data class Equation(val left: Expr, val right: Expr) : Proposition {
     var equivalence = Equivalence.Unknown

@@ -5,7 +5,7 @@ import maths.core.ast.Equation
 import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
 import maths.core.dsl.maths
-import maths.core.state.Equivalence
+import maths.core.ast.Equivalence
 
 class AdditionPropertyTests : StringSpec({
     "addition is commutative" {

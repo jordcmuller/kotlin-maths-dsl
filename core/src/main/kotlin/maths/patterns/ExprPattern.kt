@@ -16,6 +16,7 @@ sealed class ExprPattern : Pattern<Expr> {
             is Func -> TODO()
             is Neg -> TODO()
             is Pow -> TODO()
+            else -> TODO("else branch")
         }
     }
 }
