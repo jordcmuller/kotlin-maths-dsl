@@ -47,6 +47,7 @@ fun Stmt.readable(): String = when (this) {
     is Equation -> "${left.readable()} = ${right.readable()}"
     is VariableDeclaration -> "let ${this.variable.name}"
     is Proposition -> "Proposition $this"
+    else -> TODO("else branch")
 }
 
 // Helper for superscript conversion (for readable mode)

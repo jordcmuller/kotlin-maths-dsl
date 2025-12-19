@@ -9,4 +9,5 @@ fun MathsState.validateStatement(stmt: Stmt) = when (stmt) {
     is VariableDeclaration -> processVariableDeclaration(stmt)
     is Equation -> processEquation(stmt)
     is Proposition -> TODO("validate proposition")
+    else -> TODO("else branch")
 }

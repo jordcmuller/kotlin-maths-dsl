@@ -42,7 +42,7 @@ class Neg(val child: Expr) : Expr
 class Func(val name: String, val arg: Expr) : Expr
 
 
-sealed interface Stmt
+interface Stmt
 
 data class Equation(val left: Expr, val right: Expr) : Proposition {
     var equivalence = Equivalence.Unknown

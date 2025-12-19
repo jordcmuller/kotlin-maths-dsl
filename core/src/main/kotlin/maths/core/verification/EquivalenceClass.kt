@@ -1,7 +1,7 @@
 package maths.core.verification
 
 import maths.core.ast.Expr
-import maths.core.state.Equivalence
+import maths.core.ast.Equivalence
 
 class EquivalenceClass {
     val expressions = mutableListOf<Expr>()
