@@ -1,6 +1,9 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("java")
-  id("org.jetbrains.kotlin.jvm") version "2.1.20"
+  kotlin("jvm")
   id("org.jetbrains.intellij.platform") version "2.5.0"
 }
 
@@ -19,7 +22,7 @@ repositories {
 dependencies {
   implementation(project(":core"))
   intellijPlatform {
-    create("IC", "2025.1")
+    create("IC", "2025.2.5")
     testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
 
     // Add necessary plugin dependencies for compilation here, example:
@@ -40,13 +43,16 @@ intellijPlatform {
   }
 }
 
+kotlin {
+  compilerOptions {
+    jvmTarget = JvmTarget.fromTarget("21")
+  }
+}
+
 tasks {
   // Set the JVM compatibility versions
   withType<JavaCompile> {
     sourceCompatibility = "21"
     targetCompatibility = "21"
-  }
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "21"
   }
 }
