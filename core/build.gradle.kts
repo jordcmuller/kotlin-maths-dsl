@@ -26,6 +26,10 @@ tasks.test {
 
 kotlin {
     jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+        freeCompilerArgs.add("-Xwhen-guards")
+    }
 }
 
 publishing {
@@ -38,8 +42,4 @@ publishing {
     repositories {
         mavenLocal()
     }
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.compilerOptions {
-    freeCompilerArgs.set(listOf("-Xwhen-guards"))
 }
