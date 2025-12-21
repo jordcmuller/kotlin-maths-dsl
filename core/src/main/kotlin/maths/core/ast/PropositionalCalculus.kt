@@ -31,15 +31,15 @@ interface QuantifiedProposition: Proposition
 class Universal(val variable: Var, val proposition: Proposition): QuantifiedProposition
 class Existential(val variable: Var, val proposition: Proposition): QuantifiedProposition
 
-context(_: MathsContext) fun forall(variable: Var) = ForAll(variable)
+context(_: MathsContext) fun forAll(variable: Var) = ForAll(variable)
 context(_: MathsContext) fun thereExists(variable: Var) = ThereExists(variable)
 
 fun main() {
     maths {
         val a by variable()
         val aEqualsItself = a eq a
-        forall(a) itHoldsThat { a eq a }
-        forall(a) itHoldsThat aEqualsItself
+        forAll(a) itHoldsThat { a eq a }
+        forAll(a) itHoldsThat aEqualsItself
 
         val b by variable()
         val equalityIsSymmetric = (b eq a) implies (a eq b)
