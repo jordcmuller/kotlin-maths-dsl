@@ -9,7 +9,8 @@ import maths.core.dsl.MathsContext
 import maths.patterns.ExprPattern
 
 class RewriteContext(var expression: Expr) {
-    infix fun Expr.with(replacement: Expr) {
+    // TODO: consider doing the statement validity check with the context parameter
+    context(mathsContext: MathsContext) infix fun Expr.with(replacement: Expr) {
         expression = rewrite(expression, this, replacement)
     }
 }
