@@ -42,7 +42,25 @@ class BinaryPattern(
         // Try the original structure first
         if (left.accepts(value.left) && right.accepts(value.right)) return true
 
-        // Try each algebraic rule in turn
+        return false
+    }
+}
+
+
+/*
+    TODO: Move this to the maths context
+     instead of baking the property identity into the accept method,
+     extend the equivalence by creating the other instances of the expression
+     and connecting these to the original expression with the equivalence classes in the context.
+     This should be more scalable as it treats the expressions themselves as data and provides a single
+     point to extend from in a generic manner. Any equivalence identities will be valid here.
+     This could be properties like
+        associativity: a + b + c = a + (b + c)
+        commutativity: a + b = b + a
+        distributivity: a * (b + c) = a * b + a * c
+        identity: a + 0 = a, a * 1 = a
+
+         // Try each algebraic rule in turn
         val operationProperties = propertyMap[operation] ?: return false
 
         for (property in operationProperties) {
@@ -52,6 +70,5 @@ class BinaryPattern(
             }
         }
 
-        return false
-    }
-}
+
+* */
