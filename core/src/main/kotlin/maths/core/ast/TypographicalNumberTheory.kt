@@ -1,5 +1,7 @@
 package maths.core.ast
 
+import maths.patterns.ExprPattern
+
 enum class Operation(val symbol: String) {
     ADD("+"),
     MUL("*"),
@@ -16,10 +18,11 @@ data class Var(val name: String) : Expr {
 
 open class BinaryExpr(val left: Expr, val operation: Operation, val right: Expr) : Expr {
     override fun equals(other: Any?): Boolean {
+        if (other == null) return false
         if (other !is BinaryExpr) return false
-        if (operation != other.operation) return false
-        if (left != other.left || right != other.right) return false
-        return true
+        if (this === other) return true
+
+        return ExprPattern.fromExpr(this).accepts(other)
     }
 
     override fun hashCode(): Int {
