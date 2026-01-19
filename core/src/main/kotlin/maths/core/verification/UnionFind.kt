@@ -14,10 +14,11 @@ class UnionFind {
         return eClassId.parent.representative
     }
 
-    fun union(a: EClassId, b: EClassId): EClassId {
-        if (a isNotInSameEClassAs b) b.representative.parent = a.representative
+    fun union(a: EClassId, b: EClassId): Boolean {
+        if (a isInSameEClassAs b) return false
 
-        return a.representative
+        b.representative.parent = a.representative
+        return true
     }
 
     private var EClassId.parent
@@ -25,5 +26,5 @@ class UnionFind {
         set(value) { parents[this] = value }
     private val EClassId.representative get() = find(this)
     private val EClassId.isRepresentative get() = this == parent
-    private infix fun EClassId.isNotInSameEClassAs(other: EClassId) = representative != other.representative
+    private infix fun EClassId.isInSameEClassAs(other: EClassId) = representative == other.representative
 }

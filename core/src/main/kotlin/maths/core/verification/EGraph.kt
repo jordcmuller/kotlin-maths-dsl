@@ -1,140 +1,121 @@
 package maths.core.verification
 
-import maths.core.ast.BinaryExpr
-import maths.core.ast.Const
-import maths.core.ast.Expr
-import maths.core.ast.Var
-import maths.core.dsl.maths
+class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
+    val unionFind = UnionFind()
 
-class EGraph {
-    val eclasses = mutableMapOf<EClassId, EClass>()
-    val hashcons = mutableMapOf<String, EClassId>()
-    val parents = mutableMapOf<EClassId, MutableSet<ParentRef>>()
+    val eClasses = mutableListOf<EClass>()
+    val eNodes = mutableListOf<ENode>()
 
-    val worklist = mutableListOf<ParentRef>()
+    val eNodeHashCons = mutableMapOf<String, EClassId>()
+    val eClassesById = mutableMapOf<EClassId, EClass>()
 
-    private fun hash(expr: Expr): String {
-        return when (expr) {
-            is BinaryExpr -> hash(expr.left) + expr.operation.symbol + "(${hash(expr.right)})"
-            is Var -> expr.name
-            is Const -> expr.value.toString()
-            else -> TODO("Missing expr type")
+    var latestId = 0
+
+    val worklist = mutableSetOf<EClassId>()
+
+    fun add(expr: ExprType): EClassId {
+        return lowerer.lower(expr, ::add)
+    }
+
+    fun add(eNode: ENode): EClassId {
+        val representativeEClassId = find(eNode)
+        if (representativeEClassId != null) return representativeEClassId
+
+        processENode(eNode)
+        return createEClass(eNode).id
+    }
+
+    fun createEClass(eNode: ENode): EClass {
+        return EClass(latestId++, mutableListOf(eNode)).also {
+            processEClass(it)
         }
     }
 
-    private fun hash(node: ENode): String {
-        return "(${node.operation} ${node.children.joinToString(", ")})"
-    }
-
-    private fun createNewNode(expr: Expr) = when (expr) {
-        is BinaryExpr -> ENode(expr.operation.symbol, mutableListOf(add(expr.left), add(expr.right)))
-        is Var -> ENode(expr.name)
-        is Const -> ENode(expr.value.toString())
-        else -> TODO("Missing expr type")
-    }
-
-    fun add(expr: Expr): EClassId {
-        val hash = hash(expr)
-
-        val existingEClass = hashcons[hash]
-        if (existingEClass != null) return existingEClass
-
-        val newNode = createNewNode(expr)
-
-        val newId = eclasses.size
-        hashcons[hash] = newId
-
-        val newEClass = EClass(newId, mutableListOf(newNode))
-
-        eclasses[newId] = newEClass
-
-        newNode.children.forEach { childId ->
-            val parentSet = parents.getOrPut(childId) { mutableSetOf() }
-            parentSet += ParentRef(newNode, newId)
+    private fun processEClass(eClass: EClass) {
+        unionFind.add(eClass.id)
+        eClasses.add(eClass)
+        eClass.nodes.forEach {
+            eNodeHashCons[eNodeKey(it)] = eClass.id
         }
-
-        return newId
+        eClassesById[eClass.id] = eClass
     }
 
-    fun find(eClassId: EClassId): EClass? {
-        TODO()
+    private fun processENode(eNode: ENode) {
+        eNodes.add(eNode)
     }
 
-    fun union(a: EClassId, b: EClassId): Boolean {
-        val ra = eclasses[a] ?: error("Non-existent EClass")
-        val rb = eclasses[b] ?: error("Non-existent EClass")
-        if (ra == rb) return false
-
-        ra.nodes.addAll(rb.nodes)
-        eclasses[b] = ra
-
-        return true
+    fun find(eNode: ENode): EClassId? {
+        return unionFind.find(eNodeHashCons[eNodeKey(eNode)] ?: return null)
     }
 
     fun merge(a: EClassId, b: EClassId): Boolean {
-        if (!union(a, b)) return false
+        if (!unionFind.union(a, b)) return false
 
-        worklist += (parents[a] ?: setOf())
-        worklist += (parents[b] ?: setOf())
+        with(worklist) {
+            add(a)
+            add(b)
+        }
 
         return true
     }
 
     fun rebuild() {
-        val groups = mutableMapOf<String, EClassId>()
+        // process pending merges
+        val idsToProcess = worklist.map { it }
+        worklist.clear()
 
-        // update the children for all the parents to the main equivalence class id
-        while (worklist.isNotEmpty()) {
-            val parent = worklist.removeAt(0)
-            val children = parent.enode.children
-            for ((i, childEClass) in children.withIndex()) {
-                children[i] = eclasses[childEClass]?.id ?: error("Non-existent EClass")
+        val groupedEClasses = idsToProcess
+            .mapNotNull { eClassesById[it] }
+            .groupBy { unionFind.find(it.id) }
+
+        groupedEClasses.forEach { (canonicalId, eClasses) ->
+            val canonicalEClass = eClassesById[canonicalId] ?: error("Unable to find canonical EClass during rebuild")
+
+            eClasses
+                .filter { it.id != canonicalEClass.id }
+                .forEach { combine(canonicalEClass, it) }
+        }
+
+        // canonicalize affected nodes
+        eNodes.forEach { it.children = it.children.map(unionFind::find) }
+
+        // detect congruence
+        eNodes.groupBy { eNodeKey(it) }
+        // union newly equivalent eclasses
+            .forEach { (_, nodes) ->
+                nodes.reduce { acc, node ->
+                    val a = find(acc) ?: error("Unable to find node")
+                    val b = find(node) ?: error("Unable to find node")
+                    merge(a, b)
+                    acc
+                }
             }
 
-            // add to group based on hash of operation and children eClassIds
-            val nodeHash = hash(parent.enode)
-
-            val priorMatchingEClassId = groups[nodeHash]
-            if (priorMatchingEClassId != null)
-                merge(priorMatchingEClassId, parent.eClassId)
-            else groups[nodeHash] = parent.eClassId
+        // replace the entire hashcons
+        eNodeHashCons.clear()
+        eClasses.forEach { eClass ->
+            eClass.nodes.forEach {
+                eNodeHashCons[eNodeKey(it)] = eClass.id
+            }
         }
     }
 
-    fun ematch() {}
-}
-
-typealias EClassId = Int
-
-data class EClass(
-    val id: EClassId,
-    val nodes: MutableList<ENode>
-)
-
-data class ENode(
-    val operation: String,
-    val children: MutableList<EClassId> = mutableListOf(),
-)
-
-data class ParentRef(
-    val enode: ENode,
-    val eClassId: EClassId
-)
-
-
-fun main() {
-    val graph = EGraph()
-    maths {
-        val x by variable()
-        val y by variable()
-        val eclass1 = graph.add(x)
-        val eclass2 = graph.add(y)
-        val eclass3 = graph.add(1.c)
-        graph.add(x + 1)
-        graph.add(y + 1)
-        graph.add(y + 1)
-        graph.merge(eclass1, eclass2)
-        graph.merge(eclass1, eclass3)
-        graph.rebuild()
+    fun eNodeKey(eNode: ENode) = buildString {
+        append(eNode.identifier)
+        if (eNode.children.isNotEmpty()) {
+            append("(${eNode.children.joinToString(" ")})")
+        }
     }
+
+    fun combine(a: EClass, b: EClass) {
+        a.nodes += b.nodes
+        disposeEClass(b)
+    }
+
+    private fun disposeEClass(b: EClass) {
+        eClasses.remove(b)
+        eClassesById.remove(b.id)
+    }
+
+    fun mergeAndRebuild(a: EClassId, b: EClassId) = merge(a, b).also { rebuild() }
 }
