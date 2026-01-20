@@ -68,12 +68,16 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
             .mapNotNull { eClassesById[it] }
             .groupBy { unionFind.find(it.id) }
 
-        groupedEClasses.forEach { (canonicalId, eClasses) ->
+        groupedEClasses.forEach { (canonicalId, pendingMergeEClasses) ->
             val canonicalEClass = eClassesById[canonicalId] ?: error("Unable to find canonical EClass during rebuild")
 
-            eClasses
+            pendingMergeEClasses
                 .filter { it.id != canonicalEClass.id }
-                .forEach { combine(canonicalEClass, it) }
+                .forEach {
+                    canonicalEClass.nodes += it.nodes
+                    eClasses.remove(it)
+                    eClassesById[it.id] = canonicalEClass
+                }
         }
 
         // canonicalize affected nodes
@@ -105,16 +109,6 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
         if (eNode.children.isNotEmpty()) {
             append("(${eNode.children.joinToString(" ")})")
         }
-    }
-
-    fun combine(a: EClass, b: EClass) {
-        a.nodes += b.nodes
-        disposeEClass(b)
-    }
-
-    private fun disposeEClass(b: EClass) {
-        eClasses.remove(b)
-        eClassesById.remove(b.id)
     }
 
     fun mergeAndRebuild(a: EClassId, b: EClassId) = merge(a, b).also { rebuild() }
