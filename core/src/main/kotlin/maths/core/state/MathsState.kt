@@ -6,9 +6,13 @@ import maths.core.ast.Stmt
 import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
 import maths.core.format.readable
+import maths.core.verification.EGraph
 import maths.core.verification.EquivalenceManager
+import maths.core.verification.MathsLowerer
 
 class MathsState {
+
+    val eGraph = EGraph(MathsLowerer())
 
     // Variables
     val definedVars = mutableSetOf<String>()
@@ -16,6 +20,7 @@ class MathsState {
 
     /** Called when a new variable is declared */
     fun VariableDeclaration.declare() {
+        eGraph.add(variable)
         definedVars.plusAssign(variable.name)
         equivalenceManager.declareVariable(variable)
     }
