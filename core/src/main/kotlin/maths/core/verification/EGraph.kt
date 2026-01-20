@@ -112,4 +112,6 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
     }
 
     fun mergeAndRebuild(a: EClassId, b: EClassId) = merge(a, b).also { rebuild() }
+
+    override fun toString() = print()
 }
