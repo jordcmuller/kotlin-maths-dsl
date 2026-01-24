@@ -35,7 +35,7 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
         unionFind.add(eClass.id)
         eClasses.add(eClass)
         eClass.nodes.forEach {
-            eNodeHashCons[eNodeKey(it)] = eClass.id
+            eNodeHashCons[it.toHashKey] = eClass.id
         }
         eClassesById[eClass.id] = eClass
     }
@@ -45,7 +45,7 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
     }
 
     fun find(eNode: ENode): EClassId? {
-        return unionFind.find(eNodeHashCons[eNodeKey(eNode)] ?: return null)
+        return unionFind.find(eNodeHashCons[eNode.toHashKey] ?: return null)
     }
 
     fun merge(a: EClassId, b: EClassId): Boolean {
@@ -84,7 +84,7 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
         eNodes.forEach { it.children = it.children.map(unionFind::find) }
 
         // detect congruence
-        eNodes.groupBy { eNodeKey(it) }
+        eNodes.groupBy { it.toHashKey }
         // union newly equivalent eclasses
             .forEach { (_, nodes) ->
                 nodes.reduce { acc, node ->
@@ -99,19 +99,19 @@ class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
         eNodeHashCons.clear()
         eClasses.forEach { eClass ->
             eClass.nodes.forEach {
-                eNodeHashCons[eNodeKey(it)] = eClass.id
+                eNodeHashCons[it.toHashKey] = eClass.id
             }
-        }
-    }
-
-    fun eNodeKey(eNode: ENode) = buildString {
-        append(eNode.identifier)
-        if (eNode.children.isNotEmpty()) {
-            append("(${eNode.children.joinToString(" ")})")
         }
     }
 
     fun mergeAndRebuild(a: EClassId, b: EClassId) = merge(a, b).also { rebuild() }
 
     override fun toString() = print()
+}
+
+val ENode.toHashKey get() = buildString {
+    append(identifier)
+    if (children.isNotEmpty()) {
+        append("(${children.joinToString(" ")})")
+    }
 }
