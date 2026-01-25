@@ -8,6 +8,8 @@ import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
 import maths.core.dsl.maths
 import maths.core.ast.Equivalence
+import maths.core.dsl.c
+import maths.core.dsl.plus
 
 class VariableEqualityTests : StringSpec({
     "x defined as an unknown and equated to 2 should make x equal to 2" {
