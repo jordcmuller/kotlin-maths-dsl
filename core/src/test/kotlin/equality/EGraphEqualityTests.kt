@@ -67,12 +67,7 @@ class EGraphEqualityTests : StringSpec({
             val b by variable()
             val c by variable()
 
-            a*b equate b*a
-            b*a*c equate b*(a*c)
-
-            val result = a * b * c equal b * (a * c)
-
-            result shouldBe true
+            a * b * c equal b * (a * c) shouldBe true
         }
     }
 
