@@ -2,11 +2,10 @@ package equality
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import maths.core.ast.Add
-import maths.core.ast.Const
-import maths.core.ast.Equation
 import maths.core.dsl.maths
 import maths.core.ast.Equivalence
+import maths.core.dsl.plus
+import maths.core.dsl.times
 
 class EqualityPropertiesTests : StringSpec({
     "Equality is reflexive: For every x, one has x = x." {
@@ -44,6 +43,15 @@ class EqualityPropertiesTests : StringSpec({
         }
     }
 
+    "a * b * c = b * (a * c)" {
+        maths {
+            val a by variable()
+            val b by variable()
+            val c by variable()
+
+            (a * b * c eq b * (a * c)).equivalence shouldBe Equivalence.True
+        }
+    }
 
     "Equality allows for substitution" {
         maths {
