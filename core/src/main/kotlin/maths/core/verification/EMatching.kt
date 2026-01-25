@@ -9,6 +9,8 @@ import maths.core.ast.Var
 import maths.core.dsl.c
 import maths.core.dsl.plus
 import maths.core.dsl.v
+import maths.core.rewriting.additiveAssociativity
+import maths.core.rewriting.additiveCommutativity
 
 fun eMatch(eGraph: EGraph<Expr>, exprToFind: Expr): List<Expr> {
     return eMatch(eGraph, exprToFind.toEMatcher())
@@ -98,17 +100,7 @@ fun main() {
 
     egg.add("x".v + 1.c)
 
-    val rewriteRules = listOf(
-        RewriteRule(BinaryMatcher(AnyNode, Operation.ADD, AnyNode)) {
-            if (it !is BinaryExpr || it.operation != ADD) null
-            else Add(it.right, it.left)
-        },
-        RewriteRule(BinaryMatcher(BinaryMatcher(AnyNode, ADD, AnyNode), ADD, AnyNode)) {
-            if (it !is BinaryExpr || it.operation != ADD) null
-            else if (it.left !is BinaryExpr || it.left.operation != ADD) null
-            else Add(it.left.left, Add(it.left.right, it.right))
-        }
-    )
+    val rewriteRules = listOf(additiveCommutativity, additiveAssociativity)
     saturate(egg, rewriteRules)
 
     println(eMatch(egg, 1.c))
@@ -125,5 +117,3 @@ fun main() {
     println(eMatch(egg, "a".v + ("b".v + "c".v)))
 
 }
-
-class RewriteRule(val structure: EMatcher, val rewrite: (Expr) -> Expr?)
