@@ -1,6 +1,7 @@
 package maths.core.verification
 
 import maths.core.ast.Expr
+import maths.core.rewriting.RewriteRule
 
 tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>) {
     rewriteRules.forEach { rule ->
