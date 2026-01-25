@@ -7,6 +7,8 @@ import maths.core.ast.Const
 import maths.core.ast.Equation
 import maths.core.dsl.maths
 import maths.core.ast.Equivalence
+import maths.core.dsl.c
+import maths.core.dsl.plus
 
 class IntegerEqualityTests : StringSpec({
     "A constant should be equal to itself" {
