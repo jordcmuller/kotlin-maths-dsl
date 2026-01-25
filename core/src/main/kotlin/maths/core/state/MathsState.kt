@@ -8,8 +8,10 @@ import maths.core.ast.VariableDeclaration
 import maths.core.format.readable
 import maths.core.rewriting.additiveAssociativity
 import maths.core.rewriting.additiveCommutativity
+import maths.core.rewriting.additiveIdentity
 import maths.core.rewriting.multiplicativeAssociativity
 import maths.core.rewriting.multiplicativeCommutativity
+import maths.core.rewriting.multiplicativeIdentity
 import maths.core.verification.EquivalenceManager
 import maths.core.verification.MathsEGraph
 
@@ -18,8 +20,10 @@ class MathsState {
     val rewriteRules = mutableListOf(
         additiveCommutativity,
         additiveAssociativity,
+        additiveIdentity,
         multiplicativeCommutativity,
-        multiplicativeAssociativity
+        multiplicativeAssociativity,
+        multiplicativeIdentity
     )
 
     val eGraph = MathsEGraph()
