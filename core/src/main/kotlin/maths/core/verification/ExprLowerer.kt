@@ -14,11 +14,11 @@ class MathsLowerer : ExprLowerer<Expr> {
             is Var -> add(EVar(expr.name))
 
             is BinaryExpr -> {
-                val operator = when (expr) {
-                    is Add -> "+"
-                    is Sub -> "-"
-                    is Mul -> "*"
-                    is Div -> "/"
+                val operator = when (expr.operation) {
+                    ADD -> "+"
+                    SUB -> "-"
+                    MUL -> "*"
+                    DIV -> "/"
                     else -> error("Unknown operator $expr")
                 }
 

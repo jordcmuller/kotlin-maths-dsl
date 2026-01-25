@@ -1,6 +1,6 @@
 package maths.core.verification
 
-class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>) {
+open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: ExprBuilder<ExprType>) {
     val unionFind = UnionFind()
 
     val eClasses = mutableListOf<EClass>()
