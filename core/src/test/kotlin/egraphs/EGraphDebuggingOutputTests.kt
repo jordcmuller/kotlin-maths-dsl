@@ -5,13 +5,12 @@ import io.kotest.matchers.shouldBe
 import maths.core.dsl.c
 import maths.core.dsl.plus
 import maths.core.dsl.v
-import maths.core.verification.EGraph
-import maths.core.verification.MathsLowerer
+import maths.core.verification.MathsEGraph
 import maths.core.verification.print
 
 class EGraphDebuggingOutputTests : StringSpec({
     "A constant in the egraph should show debug output" {
-        val eGraph = EGraph(MathsLowerer())
+        val eGraph = MathsEGraph()
 
         eGraph.add(1.c)
 
@@ -27,7 +26,7 @@ class EGraphDebuggingOutputTests : StringSpec({
     }
 
     "A variable in the egraph should show debug output" {
-        val eGraph = EGraph(MathsLowerer())
+        val eGraph = MathsEGraph()
 
         eGraph.add("x".v)
 
@@ -39,7 +38,7 @@ class EGraphDebuggingOutputTests : StringSpec({
     }
 
     "Two variables in the egraph should show debug output" {
-        val eGraph = EGraph(MathsLowerer())
+        val eGraph = MathsEGraph()
 
         eGraph.add("x".v)
         eGraph.add("y".v)
@@ -58,7 +57,7 @@ class EGraphDebuggingOutputTests : StringSpec({
     }
 
     "A composite expression in the egraph should show debug output" {
-        val eGraph = EGraph(MathsLowerer())
+        val eGraph = MathsEGraph()
 
         eGraph.add("x".v + "y".v)
 
