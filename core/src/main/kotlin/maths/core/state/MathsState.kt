@@ -6,13 +6,23 @@ import maths.core.ast.Stmt
 import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
 import maths.core.format.readable
-import maths.core.verification.EGraph
+import maths.core.rewriting.additiveAssociativity
+import maths.core.rewriting.additiveCommutativity
+import maths.core.rewriting.multiplicativeAssociativity
+import maths.core.rewriting.multiplicativeCommutativity
 import maths.core.verification.EquivalenceManager
-import maths.core.verification.MathsLowerer
+import maths.core.verification.MathsEGraph
 
 class MathsState {
 
-    val eGraph = EGraph(MathsLowerer())
+    val rewriteRules = mutableListOf(
+        additiveCommutativity,
+        additiveAssociativity,
+        multiplicativeCommutativity,
+        multiplicativeAssociativity
+    )
+
+    val eGraph = MathsEGraph()
 
     // Variables
     val definedVars = mutableSetOf<String>()
