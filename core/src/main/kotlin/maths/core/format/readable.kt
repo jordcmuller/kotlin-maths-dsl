@@ -32,11 +32,11 @@ fun Expr.readable(): String = when (this) {
         if (left is Const || right is Const) "$leftStr$rightStr" else "$leftStr·$rightStr"
     }
     is Div -> "${left.readable()} / ${right.readable()}"
-    is BinaryExpr -> "${left.readable()} ${operation.symbol} ${right.readable()}"
     is Pow -> {
         val exp = exp.readable()
         "${base.readable()}${superscript(exp.toInt())}"
     }
+    is BinaryExpr -> "${left.readable()} ${operation.symbol} ${right.readable()}"
 
     is Neg -> "-${child.readable()}"
     is Func -> TODO()
