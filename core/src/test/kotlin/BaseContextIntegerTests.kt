@@ -1,6 +1,8 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import maths.core.dsl.c
 import maths.core.dsl.maths
+import maths.core.dsl.plus
 
 class BaseContextIntegerTests : StringSpec({
     "2 should not change the context" {
