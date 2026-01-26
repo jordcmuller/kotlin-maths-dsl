@@ -29,6 +29,7 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xwhen-guards")
+        freeCompilerArgs.add("-Xcontext-sensitive-resolution")
     }
 }
 
