@@ -3,29 +3,13 @@ package maths.core.state
 import maths.core.ast.Equation
 import maths.core.ast.Equivalence
 import maths.core.ast.Expr
-import maths.core.ast.Var
-import maths.patterns.ExprPattern
+import maths.core.verification.saturate
 
 fun MathsState.processEquation(equation: Equation) {
     statements += equation
 
     val left = equation.left
     val right = equation.right
-
-    if (left is Var && right is Var && left == right) {
-        equation.equivalence = Equivalence.True
-        return
-    }
-
-    if (left is Var && left.isUnknown) {
-        equation.equivalence = equivalenceManager.equate(left, right)
-        return
-    }
-
-    if (right is Var && right.isUnknown) {
-        equation.equivalence = equivalenceManager.equate(left, right)
-        return
-    }
 
     equation.equivalence = checkEquivalence(left, right)
 
@@ -37,22 +21,26 @@ fun computationallyEquivalent(left: Expr, right: Expr): Boolean {
     return compute(left) == compute(right)
 }
 
-private fun checkEquivalence(left: Expr, right: Expr): Equivalence {
+private fun MathsState.checkEquivalence(left: Expr, right: Expr): Equivalence {
     // TODO: which situations result in unknown equivalence
 
-    if (computationallyEquivalent(left, right)) {
+    if (semanticallyEquivalent(left, right)) {
         return Equivalence.True
     }
 
-    if (semanticallyEquivalent(left, right)) {
+    if (computationallyEquivalent(left, right)) {
         return Equivalence.True
     }
 
     return Equivalence.False
 }
 
-private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
-    return ExprPattern.fromExpr(a).accepts(b)
+private fun MathsState.semanticallyEquivalent(a: Expr, b: Expr): Boolean {
+    val leftId = eGraph.add(a)
+    saturate(eGraph, rewriteRules)
+    val rightId = eGraph.add(b)
+
+    return leftId == rightId
 }
 
 //    private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
