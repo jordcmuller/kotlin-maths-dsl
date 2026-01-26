@@ -27,8 +27,10 @@ open class BinaryExpr(val left: Expr, val operation: Operation, val right: Expr)
     }
 
     override fun hashCode(): Int {
-        return left.hashCode() + "+".hashCode() + right.hashCode()
+        return left.hashCode() + operation.symbol.hashCode() + right.hashCode()
     }
+
+    override fun toString() = "($left ${operation.symbol} $right)"
 }
 
 class Add(left: Expr, right: Expr) : BinaryExpr(left, Operation.ADD, right)
