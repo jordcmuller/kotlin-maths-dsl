@@ -10,15 +10,24 @@ sealed class ExprPattern : Pattern<Expr> {
             BinaryPattern(left, op, right)
 
         fun fromExpr(expr: Expr): ExprPattern = when (expr) {
+            zero -> ZeroPattern()
+            is Successor -> SuccessorPattern(fromExpr(expr.of))
             is Var -> variable(expr.name)
             is Const -> constant(expr.value)
             is BinaryExpr -> binary(fromExpr(expr.left), expr.operation, fromExpr(expr.right))
             is Func -> TODO()
             is Neg -> TODO()
-            is Pow -> TODO()
             else -> TODO("else branch")
         }
     }
+}
+
+class ZeroPattern : ExprPattern() {
+    override fun accepts(value: Expr): Boolean = value == zero
+}
+
+class SuccessorPattern(private val of: ExprPattern) : ExprPattern() {
+    override fun accepts(value: Expr): Boolean = value is Successor && of.accepts(value.of)
 }
 
 class VariablePattern(private val name: String?) : ExprPattern() {
