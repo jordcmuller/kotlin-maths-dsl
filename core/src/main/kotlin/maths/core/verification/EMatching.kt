@@ -1,6 +1,5 @@
 package maths.core.verification
 
-import maths.core.ast.Add
 import maths.core.ast.BinaryExpr
 import maths.core.ast.Const
 import maths.core.ast.Expr
@@ -37,11 +36,12 @@ fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<ECla
 
     val allMatchedExpressions = nodesToSearch
         .filter { identifierMatch(it, eMatcher) }
-        .filter { it.children.size == eMatcher.children.size }
+        .filter { childCountMatch(it, eMatcher) }
         .flatMap { eNode ->
             if (eNode.children.isEmpty()) return@flatMap listOf(eGraph.builder.build(eNode))
 
-            val allMatchedExpressionsForEachChild = eNode.children.zip(eMatcher.children)
+            val childEMatchers = if (eMatcher is AnyNode) List(eNode.children.size) { AnyNode } else eMatcher.children
+            val allMatchedExpressionsForEachChild = eNode.children.zip(childEMatchers)
                 .map { (child, childMatcher) -> eMatch(eGraph, childMatcher, listOf(child)) }
 
             val firstChildMatchedExpressions = allMatchedExpressionsForEachChild.first()
@@ -75,6 +75,11 @@ fun identifierMatch(eNode: ENode, eMatcher: EMatcher): Boolean {
         is VarMatcher -> eNode.identifier == eMatcher.name
         is BinaryMatcher -> eNode.identifier == eMatcher.operation.symbol
     }
+}
+
+fun childCountMatch(it: ENode, eMatcher: EMatcher) = when (eMatcher) {
+    is AnyNode -> true
+    else -> it.children.size == eMatcher.children.size
 }
 
 fun Expr.toEMatcher(): EMatcher {
