@@ -61,13 +61,24 @@ class EGraphEqualityTests : StringSpec({
         }
     }
 
-    "a * b * c = b * (a * c)" {
+    "All commutative and associative combinations of a * b * c" {
         maths {
             val a by variable()
             val b by variable()
             val c by variable()
 
+            a * b * c equal (a * b) * c shouldBe true
+            a * b * c equal (a * c) * b shouldBe true
+            a * b * c equal (b * a) * c shouldBe true
+            a * b * c equal (b * c) * a shouldBe true
+            a * b * c equal (c * b) * a shouldBe true
+            a * b * c equal (c * a) * b shouldBe true
+            a * b * c equal a * (b * c) shouldBe true
+            a * b * c equal a * (c * b) shouldBe true
             a * b * c equal b * (a * c) shouldBe true
+            a * b * c equal b * (c * a) shouldBe true
+            a * b * c equal c * (b * a) shouldBe true
+            a * b * c equal c * (a * b) shouldBe true
         }
     }
 
