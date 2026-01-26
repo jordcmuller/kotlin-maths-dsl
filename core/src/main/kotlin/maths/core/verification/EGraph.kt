@@ -9,7 +9,7 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
     val eNodeHashCons = mutableMapOf<String, EClassId>()
     val eClassesById = mutableMapOf<EClassId, EClass>()
 
-    var latestId = 0
+    var latestId = 1
 
     val worklist = mutableSetOf<EClassId>()
 
