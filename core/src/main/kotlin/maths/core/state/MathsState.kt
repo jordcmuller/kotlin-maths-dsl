@@ -12,7 +12,6 @@ import maths.core.rewriting.additiveIdentity
 import maths.core.rewriting.multiplicativeAssociativity
 import maths.core.rewriting.multiplicativeCommutativity
 import maths.core.rewriting.multiplicativeIdentity
-import maths.core.verification.EquivalenceManager
 import maths.core.verification.MathsEGraph
 
 class MathsState {
@@ -36,7 +35,6 @@ class MathsState {
     fun VariableDeclaration.declare() {
         eGraph.add(variable)
         definedVars.plusAssign(variable.name)
-        equivalenceManager.declareVariable(variable)
     }
     val Var.isDeclared get() = definedVars.contains(name)
     fun Var.set(const: Const) = variableValues.put(name, const).also { value = const }
@@ -50,7 +48,6 @@ class MathsState {
 
     // Fancy stuff
     val representations = mutableMapOf<String, MutableList<Expr>>()
-    val equivalenceManager = EquivalenceManager()
 
 
 //================================================================================================================
