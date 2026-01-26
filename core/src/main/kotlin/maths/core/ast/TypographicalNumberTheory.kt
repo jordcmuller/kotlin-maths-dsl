@@ -6,7 +6,8 @@ enum class Operation(val symbol: String) {
     ADD("+"),
     MUL("*"),
     SUB("-"),
-    DIV("/")
+    DIV("/"),
+    POW("^")
 }
 
 //@JvmInline
@@ -38,7 +39,7 @@ class Mul(left: Expr, right: Expr) : BinaryExpr(left, Operation.MUL, right)
 
 class Div(left: Expr, right: Expr) : BinaryExpr(left, Operation.DIV, right)
 
-class Pow(val base: Expr, val exp: Expr) : Expr
+class Pow(val base: Expr, val exp: Expr) : BinaryExpr(base, Operation.MUL, exp)
 
 class Neg(val child: Expr) : Expr
 
