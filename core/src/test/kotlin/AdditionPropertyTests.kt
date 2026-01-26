@@ -1,11 +1,8 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import maths.core.ast.Const
-import maths.core.ast.Equation
-import maths.core.ast.Var
-import maths.core.ast.VariableDeclaration
 import maths.core.dsl.maths
 import maths.core.ast.Equivalence
+import maths.core.dsl.plus
 
 class AdditionPropertyTests : StringSpec({
     "addition is commutative" {
@@ -24,6 +21,7 @@ class AdditionPropertyTests : StringSpec({
             val z by variable()
 
             (x + (y + z) eq (x + y) + z).equivalence shouldBe Equivalence.True
+            ((x + y) + z eq x + (y + z)).equivalence shouldBe Equivalence.True
         }
    }
 
