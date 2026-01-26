@@ -40,6 +40,7 @@ fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<ECla
         .flatMap { eNode ->
             if (eNode.children.isEmpty()) return@flatMap listOf(eGraph.builder.build(eNode))
 
+            // TODO: this causes the matching to go on forever if there is a loop in the operations like `a * 1 = a`
             val childEMatchers = if (eMatcher is AnyNode) List(eNode.children.size) { AnyNode } else eMatcher.children
             val allMatchedExpressionsForEachChild = eNode.children.zip(childEMatchers)
                 .map { (child, childMatcher) -> eMatch(eGraph, childMatcher, listOf(child)) }
