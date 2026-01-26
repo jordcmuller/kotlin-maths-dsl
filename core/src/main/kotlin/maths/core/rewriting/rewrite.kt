@@ -6,11 +6,14 @@ import maths.core.ast.Equation
 import maths.core.ast.Expr
 import maths.core.ast.Var
 import maths.core.dsl.MathsContext
+import maths.core.state.processEquation
 import maths.patterns.ExprPattern
 
 class RewriteContext(var expression: Expr) {
-    // TODO: consider doing the statement validity check with the context parameter
     context(mathsContext: MathsContext) infix fun Expr.with(replacement: Expr) {
+        val equation = Equation(this, replacement)
+        mathsContext.state.processEquation(equation)
+        if (equation.equivalence == False) error("Invalid expression rewrite in the context")
         expression = rewrite(expression, this, replacement)
     }
 }
