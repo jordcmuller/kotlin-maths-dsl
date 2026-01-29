@@ -94,6 +94,9 @@ class EGraphEqualityTests : StringSpec({
 
             x * (y + z) equal x * y + x * z shouldBe true
             (y + z) * x equal x * y + x * z shouldBe true
+
+            x * y + x * z equal x * (y + z) shouldBe true
+            x * y + x * z equal (y + z) * x shouldBe true
         }
     }
 })
