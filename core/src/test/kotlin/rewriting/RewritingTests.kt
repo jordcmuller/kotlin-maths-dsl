@@ -15,6 +15,8 @@ class RewritingTests : StringSpec({
             val x by variable()
             val y by variable()
 
+            x equate y
+
             x rewrite (x eq y) shouldBe y
         }
     }
@@ -24,6 +26,8 @@ class RewritingTests : StringSpec({
             val x by variable()
             val y by variable()
             val z by variable()
+
+            x equate z
 
             x + y rewrite (x eq z) shouldBe z + y
         }
@@ -35,6 +39,8 @@ class RewritingTests : StringSpec({
             val y by variable()
             val z by variable()
 
+            x equate z + y
+
             x + y rewrite (x eq z + y) shouldBe z + y + y
         }
     }
@@ -44,6 +50,8 @@ class RewritingTests : StringSpec({
             val a by variable()
             val b by variable()
             val c by variable()
+
+            a equal b shouldBe false
 
             a * b * c rewrite {
                 a * b       with b * a          // commutative identity
