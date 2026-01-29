@@ -38,7 +38,8 @@ fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<ECla
         .filter { identifierMatch(it, eMatcher) }
         .filter { childCountMatch(it, eMatcher) }
         .flatMap { eNode ->
-            if (eNode.children.isEmpty()) return@flatMap listOf(eGraph.builder.build(eNode))
+            if (eMatcher is AnyNode) return@flatMap listOf(EMLeaf(eGraph.eNodeHashCons[eNode.toHashKey]!!))
+            if (eNode.children.isEmpty()) return@flatMap listOf(EMLeaf(eGraph.eNodeHashCons[eNode.toHashKey]!!))
 
             val allMatchedExpressionsForEachChild = eNode.children.zip(eMatcher.children)
                 .map { (child, childMatcher) -> eMatch(eGraph, childMatcher, listOf(child)) }
