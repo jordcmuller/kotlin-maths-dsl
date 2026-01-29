@@ -11,9 +11,6 @@ import maths.patterns.ExprPattern
 
 class RewriteContext(var expression: Expr) {
     context(mathsContext: MathsContext) infix fun Expr.with(replacement: Expr) {
-        val equation = Equation(this, replacement)
-        mathsContext.state.processEquation(equation)
-        if (equation.equivalence == False) error("Invalid expression rewrite in the context")
         expression = rewrite(expression, this, replacement)
     }
 }
@@ -32,8 +29,14 @@ infix fun Expr.rewrite(equation: Equation): Expr {
     return rewrite(this, equation.left, equation.right)
 }
 
-fun rewrite(initial: Expr, subExpression: Expr, replacement: Expr) =
-    ExpressionRewritingVisitor(subExpression, replacement).rewrite(initial)
+context(mathsContext: MathsContext)
+fun rewrite(initial: Expr, subExpression: Expr, replacement: Expr): Expr {
+    Equation(subExpression, replacement).also {
+        mathsContext.state.processEquation(it)
+        if (it.equivalence == False) error("Invalid expression rewrite in the context")
+    }
+    return ExpressionRewritingVisitor(subExpression, replacement).rewrite(initial)
+}
 
 operator fun Expr.contains(subExpression: Expr) = findSubExpression(this, subExpression) != null
 
