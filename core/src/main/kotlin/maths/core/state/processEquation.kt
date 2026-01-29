@@ -36,8 +36,11 @@ private fun MathsState.checkEquivalence(left: Expr, right: Expr): Equivalence {
 }
 
 private fun MathsState.semanticallyEquivalent(a: Expr, b: Expr): Boolean {
-    val leftId = eGraph.add(a)
+    eGraph.add(a)
+    eGraph.add(b)
     saturate(eGraph, rewriteRules)
+
+    val leftId = eGraph.add(a)
     val rightId = eGraph.add(b)
 
     return leftId == rightId
