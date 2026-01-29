@@ -9,6 +9,7 @@ import maths.core.format.readable
 import maths.core.rewriting.additiveAssociativity
 import maths.core.rewriting.additiveCommutativity
 import maths.core.rewriting.additiveIdentity
+import maths.core.rewriting.distributivity
 import maths.core.rewriting.multiplicativeAssociativity
 import maths.core.rewriting.multiplicativeCommutativity
 import maths.core.rewriting.multiplicativeIdentity
@@ -22,7 +23,8 @@ class MathsState {
         additiveIdentity,
         multiplicativeCommutativity,
         multiplicativeAssociativity,
-        multiplicativeIdentity
+        multiplicativeIdentity,
+        distributivity
     )
 
     val eGraph = MathsEGraph()

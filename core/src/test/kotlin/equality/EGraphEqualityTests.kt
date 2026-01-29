@@ -56,7 +56,9 @@ class EGraphEqualityTests : StringSpec({
     "Additive identity with reflexivity" {
         maths {
             val x by variable()
+
             x + 0 equate x
+
             x equal x + 0 shouldBe true
             x + 0 equal x + 0 shouldBe true
             x + 0 equal x shouldBe true
@@ -84,16 +86,14 @@ class EGraphEqualityTests : StringSpec({
         }
     }
 
-
-    "Equality allows for substitution" {
+    "The distributive property holds" {
         maths {
-//            (1.c eq 1.c).equivalence shouldBe Equivalence.True
-        }
-    }
+            val x by variable()
+            val y by variable()
+            val z by variable()
 
-    "Equality holds for the function application property" {
-        maths {
-//            (1.c eq 2.c).equivalence shouldBe Equivalence.False
+            x * (y + z) equal x * y + x * z shouldBe true
+            (y + z) * x equal x * y + x * z shouldBe true
         }
     }
 })

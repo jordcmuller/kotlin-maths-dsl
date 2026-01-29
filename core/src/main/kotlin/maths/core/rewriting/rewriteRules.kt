@@ -6,6 +6,7 @@ import maths.core.verification.ConstMatcher
 import maths.core.verification.EMBinary
 import maths.core.verification.RRBinary
 import maths.core.verification.RRLeaf
+import maths.core.verification.plus
 import maths.core.verification.times
 
 
@@ -53,3 +54,21 @@ val additiveIdentity = RewriteRule(BinaryMatcher(AnyNode, ADD, ConstMatcher(0.0)
     else RRLeaf(it.left.eClassId)
 }
 
+
+val distributivity = RewriteRule(AnyNode * (AnyNode + AnyNode)) {
+    if (it !is EMBinary || it.operation != MUL) null
+    else if (it.right !is EMBinary || it.right.operation != ADD) null
+    else RRBinary(
+        RRBinary(
+            RRLeaf(it.left.eClassId),
+            MUL,
+            RRLeaf(it.right.left.eClassId)
+        ),
+        ADD,
+        RRBinary(
+            RRLeaf(it.left.eClassId),
+            MUL,
+            RRLeaf(it.right.right.eClassId)
+        )
+    )
+}
