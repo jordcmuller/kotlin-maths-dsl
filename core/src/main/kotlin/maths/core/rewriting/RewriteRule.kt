@@ -1,6 +1,7 @@
 package maths.core.rewriting
 
-import maths.core.ast.Expr
+import maths.core.verification.EMatchResult
 import maths.core.verification.EMatcher
+import maths.core.verification.RewriteResult
 
-class RewriteRule(val structure: EMatcher, val rewrite: (Expr) -> Expr?)
+class RewriteRule(val pattern: EMatcher, val rewrite: (EMatchResult) -> RewriteResult?)

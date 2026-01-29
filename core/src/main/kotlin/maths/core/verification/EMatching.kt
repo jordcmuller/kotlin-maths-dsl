@@ -11,11 +11,11 @@ import maths.core.dsl.v
 import maths.core.rewriting.additiveAssociativity
 import maths.core.rewriting.additiveCommutativity
 
-fun eMatch(eGraph: EGraph<Expr>, exprToFind: Expr): List<Expr> {
+fun eMatch(eGraph: EGraph<Expr>, exprToFind: Expr): List<EMatchResult> {
     return eMatch(eGraph, exprToFind.toEMatcher())
 }
 
-fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<EClassId> = emptyList()): List<Expr> {
+fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<EClassId> = emptyList()): List<EMatchResult> {
     // The goal of eMatch is to find all the expressions that match the input expression and return them as a list
     // I am visualising this as zipping the incoming expression onto all top level expressions that are represented in the egraph.
     // TODO: should we also match sub expressions. Commutativity matches `a+b` and `(...)+c` in the expression `(a+b)+c`
@@ -40,9 +40,7 @@ fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<ECla
         .flatMap { eNode ->
             if (eNode.children.isEmpty()) return@flatMap listOf(eGraph.builder.build(eNode))
 
-            // TODO: this causes the matching to go on forever if there is a loop in the operations like `a * 1 = a`
-            val childEMatchers = if (eMatcher is AnyNode) List(eNode.children.size) { AnyNode } else eMatcher.children
-            val allMatchedExpressionsForEachChild = eNode.children.zip(childEMatchers)
+            val allMatchedExpressionsForEachChild = eNode.children.zip(eMatcher.children)
                 .map { (child, childMatcher) -> eMatch(eGraph, childMatcher, listOf(child)) }
 
             val firstChildMatchedExpressions = allMatchedExpressionsForEachChild.first()
@@ -50,7 +48,7 @@ fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<ECla
 
             val allPossibleChildCombos = allMatchedExpressionsForEachChild.drop(1)
                 .fold(cartesianProductStarter) { acc, childMatchedExpressions ->
-                    val output = mutableListOf<List<Expr>>()
+                    val output = mutableListOf<List<EMatchResult>>()
 
                     acc.forEach { childrenCombo ->
                         childMatchedExpressions.forEach { childExpr ->
@@ -61,7 +59,7 @@ fun eMatch(eGraph: EGraph<Expr>, eMatcher: EMatcher, specificEClasses: List<ECla
                     return@fold output
                 }
 
-            return@flatMap allPossibleChildCombos.map { childCombo -> eGraph.builder.build(eNode, childCombo) }
+            return@flatMap allPossibleChildCombos.map { childCombo -> EMBinary(eGraph.eNodeHashCons[eNode.toHashKey]!!, childCombo[0], getOperation(eNode.identifier), childCombo[1]) }
         }
 
     return allMatchedExpressions
@@ -92,13 +90,24 @@ fun Expr.toEMatcher(): EMatcher {
     }
 }
 
-sealed class EMatcher(val children: List<EMatcher> = emptyList()) {}
+sealed class EMatcher(val children: List<EMatcher> = emptyList())
 data object AnyVar: EMatcher()
 data object AnyConst: EMatcher()
 data object AnyNode: EMatcher()
 data class ConstMatcher(val value: Double) : EMatcher()
 data class VarMatcher(val name: String) : EMatcher()
 data class BinaryMatcher(val left: EMatcher, val operation: Operation, val right: EMatcher) : EMatcher(listOf(left, right))
+
+operator fun EMatcher.plus(that: EMatcher) = BinaryMatcher(this, ADD, that)
+operator fun EMatcher.times(that: EMatcher) = BinaryMatcher(this, MUL, that)
+
+sealed class EMatchResult(val eClassId: EClassId)
+data class EMLeaf(val id: EClassId) : EMatchResult(id)
+data class EMBinary(val id: EClassId, val left: EMatchResult, val operation: Operation, val right: EMatchResult) : EMatchResult(id)
+
+sealed interface RewriteResult
+data class RRLeaf(val eClassId: EClassId) : RewriteResult
+data class RRBinary(val left: RewriteResult, val operation: Operation, val right: RewriteResult) : RewriteResult
 
 
 fun main() {

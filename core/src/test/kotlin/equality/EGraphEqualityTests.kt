@@ -58,6 +58,8 @@ class EGraphEqualityTests : StringSpec({
             val x by variable()
             x + 0 equate x
             x equal x + 0 shouldBe true
+            x + 0 equal x + 0 shouldBe true
+            x + 0 equal x shouldBe true
         }
     }
 

@@ -1,38 +1,55 @@
 package maths.core.rewriting
 
-import maths.core.ast.Add
-import maths.core.ast.BinaryExpr
-import maths.core.ast.Mul
 import maths.core.verification.AnyNode
 import maths.core.verification.BinaryMatcher
 import maths.core.verification.ConstMatcher
+import maths.core.verification.EMBinary
+import maths.core.verification.RRBinary
+import maths.core.verification.RRLeaf
+import maths.core.verification.times
 
 
-val multiplicativeCommutativity = RewriteRule(BinaryMatcher(AnyNode, MUL, AnyNode)) {
-    if (it !is BinaryExpr || it.operation != MUL) null
-    else Mul(it.right, it.left)
+val multiplicativeCommutativity = RewriteRule(AnyNode * AnyNode) {
+    if (it !is EMBinary || it.operation != MUL) null
+    else RRBinary(RRLeaf(it.right.eClassId), MUL, RRLeaf(it.left.eClassId))
 }
-val multiplicativeAssociativity = RewriteRule(BinaryMatcher(BinaryMatcher(AnyNode, MUL, AnyNode), MUL, AnyNode)) {
-    if (it !is BinaryExpr || it.operation != MUL) null
-    else if (it.left !is BinaryExpr || it.left.operation != MUL) null
-    else Mul(it.left.left, Mul(it.left.right, it.right))
+val multiplicativeAssociativity = RewriteRule(AnyNode * AnyNode * AnyNode) {
+    if (it !is EMBinary || it.operation != MUL) null
+    else if (it.left !is EMBinary || it.left.operation != MUL) null
+    else RRBinary(
+        RRLeaf(it.left.left.eClassId),
+        MUL,
+        RRBinary(
+            RRLeaf(it.left.right.eClassId),
+            MUL,
+            RRLeaf(it.right.eClassId)
+        )
+    )
 }
-val multiplicativeIdentity = RewriteRule(BinaryMatcher(AnyNode, MUL, ConstMatcher(1.0))) {
-    if (it !is BinaryExpr || it.operation != MUL) null
-    else it.left
+val multiplicativeIdentity = RewriteRule(AnyNode * ConstMatcher(1.0)) {
+    if (it !is EMBinary || it.operation != MUL) null
+    else RRLeaf(it.left.eClassId)
 }
 
 val additiveCommutativity = RewriteRule(BinaryMatcher(AnyNode, ADD, AnyNode)) {
-    if (it !is BinaryExpr || it.operation != ADD) null
-    else Add(it.right, it.left)
+    if (it !is EMBinary || it.operation != ADD) null
+    else RRBinary(RRLeaf(it.right.eClassId), ADD, RRLeaf(it.left.eClassId))
 }
 val additiveAssociativity = RewriteRule(BinaryMatcher(BinaryMatcher(AnyNode, ADD, AnyNode), ADD, AnyNode)) {
-    if (it !is BinaryExpr || it.operation != ADD) null
-    else if (it.left !is BinaryExpr || it.left.operation != ADD) null
-    else Add(it.left.left, Add(it.left.right, it.right))
+    if (it !is EMBinary || it.operation != ADD) null
+    else if (it.left !is EMBinary || it.left.operation != ADD) null
+    else RRBinary(
+        RRLeaf(it.left.left.eClassId),
+        ADD,
+        RRBinary(
+            RRLeaf(it.left.right.eClassId),
+            ADD,
+            RRLeaf(it.right.eClassId)
+        )
+    )
 }
 val additiveIdentity = RewriteRule(BinaryMatcher(AnyNode, ADD, ConstMatcher(0.0))) {
-    if (it !is BinaryExpr || it.operation != ADD) null
-    else it.left
+    if (it !is EMBinary || it.operation != ADD) null
+    else RRLeaf(it.left.eClassId)
 }
 
