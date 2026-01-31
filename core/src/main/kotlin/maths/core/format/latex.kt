@@ -21,7 +21,7 @@ fun Expr.latex(): String = when (this) {
     }
     is Var -> name
     is Add -> "${left.latex()} + ${right.latex()}"
-    is Mul -> "${left.latex()} ${right.latex()}"
+    is Mul -> "${left.latex()} * ${right.latex()}"
     is Pow -> "{${base.latex()}}^{${exp.latex()}}"
     is Div -> TODO()
     is Sub -> TODO()
