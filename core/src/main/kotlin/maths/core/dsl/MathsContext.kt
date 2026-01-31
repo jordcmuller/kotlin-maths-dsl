@@ -50,6 +50,8 @@ class MathsContext {
         val rightId = state.eGraph.add(other)
         state.eGraph.mergeAndRebuild(leftId, rightId)
     }
+
+    operator fun invoke(statementsBlock: MathsContext.() -> Unit) = statementsBlock()
 }
 
 fun maths(statementsBlock: MathsContext.() -> Unit): MathsContext {
