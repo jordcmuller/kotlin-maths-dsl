@@ -54,7 +54,10 @@ mavenPublishing {
             developer {
                 id = "jordcmuller"
                 name = "Jordan Muller"
+                email = "jordan.c.muller13@gmail.com"
                 url = "https://github.com/jordcmuller/"
+                organization = "jordculler"
+                organizationUrl = "https://github.com/jordcmuller/"
             }
         }
         scm {
