@@ -7,7 +7,7 @@ plugins {
   id("org.jetbrains.intellij.platform") version "2.5.0"
 }
 
-group = "maths"
+group = "io.github.jordcmuller.kotlin-maths-dsl"
 version = "1.0-SNAPSHOT"
 
 repositories {

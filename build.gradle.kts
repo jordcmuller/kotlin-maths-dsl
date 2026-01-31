@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.3.0"
 }
 
-group = "maths.dsl"
+group = "io.github.jordcmuller.kotlin-maths-dsl"
 version = "1.0-SNAPSHOT"
 
 repositories {
