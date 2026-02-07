@@ -39,6 +39,8 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         eClassesById[eClass.id] = eClass
     }
 
+    fun findEClass(eClass: EClass) = eClass.canonicalEClass
+
     fun findEClass(eNode: ENode): EClass? {
         return eNodeHashCons[eNode.toHashKey]?.canonicalEClass
     }
@@ -103,18 +105,18 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
     }
 
     private fun propagateCongruence() {
-        val congruentGroups = eNodes.groupBy { it.toHashKey }
+        val congruentNodeGroups = eNodes.groupBy { it.toHashKey }.map { it.value }
+        congruentNodeGroups.forEach { congruentNodes -> mergeAllNodes(congruentNodes) }
+    }
 
-        congruentGroups.forEach { (_, congruentNodes) ->
-            val leadNode = congruentNodes.first()
-            congruentNodes.forEach { leadNode merge it }
-        }
+    private fun mergeAllNodes(congruentNodes: List<ENode>) {
+        congruentNodes.reduce { a, b -> a merge b }
     }
 
     override fun toString() = print()
 
     private val EClass.canonicalEClass: EClass get() = unionFind.find(this)
-    private infix fun ENode.merge(other: ENode) = merge(this.parentEClass, other.parentEClass)
+    private infix fun ENode.merge(other: ENode) = also { merge(this.parentEClass, other.parentEClass) }
 }
 
 val ENode.toHashKey get() = buildString {
