@@ -46,7 +46,7 @@ infix fun List<EMatchResult>.combineWith(otherList: List<EMatchResult>): List<Ma
 }
 
 fun consistentMatches(firstMap: Map<String, EClass>, secondMap: Map<String, EClass>): Boolean {
-    return secondMap.all { (matchName, eClassId) ->
-        firstMap.containsKey(matchName) && firstMap[matchName] != eClassId
+    return secondMap.all { (matchName, eClass) ->
+        eClass == (firstMap[matchName] ?: eClass)
     }
 }
