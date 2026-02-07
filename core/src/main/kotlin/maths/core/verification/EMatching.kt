@@ -16,7 +16,7 @@ infix fun EMatcher.childrenCountMatches(size: Int) = when (this) {
 fun EGraph<Expr>.eMatch(eMatcher: EMatcher, nodesToSearch: List<ENode> = eNodes): List<EMatchResult> {
     return nodesToSearch
         .filter { eMatcher idMatches it.identifier }
-        .filter { eMatcher childrenCountMatches it.children.size }
+        .filter { eMatcher childrenCountMatches it.childEClasses.size }
         .flatMap { getMatchResults(eMatcher, it) }
 }
 
@@ -26,8 +26,8 @@ fun EGraph<Expr>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchRes
     return when (matcher) {
         is AnyNode -> listOf(EMatchResult(nodeEClass, mapOf(matcher.name to nodeEClass)))
         is BinaryMatcher -> {
-            val leftEClass = node.children[0]
-            val rightEClass = node.children[1]
+            val leftEClass = node.childEClasses[0]
+            val rightEClass = node.childEClasses[1]
 
             val leftResults = eMatch(matcher.left, leftEClass.nodes).ifEmpty { return emptyList() }
             val rightResults = eMatch(matcher.right, rightEClass.nodes).ifEmpty { return emptyList() }

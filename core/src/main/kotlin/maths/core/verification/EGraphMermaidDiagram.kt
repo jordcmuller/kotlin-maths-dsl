@@ -40,7 +40,7 @@ private fun <ExprType> EGraph<ExprType>.generateAllENodeLinks(): String {
 private fun EClass.generateENodeOperandLinks() = buildString {
     nodes.forEachIndexed { index, node ->
         val fromENode = eNodeId(id, index)
-        append(node.children.joinToString("\n") { childId -> "$fromENode --> EClass$childId" })
+        append(node.childEClasses.joinToString("\n") { childId -> "$fromENode --> EClass$childId" })
     }
 }
 

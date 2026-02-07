@@ -25,7 +25,7 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         return EClass(latestId++, mutableListOf(eNode)).also {
             processEClass(it)
 
-            eNode.parent = it
+            eNode.parentEClass = it
             eNodes.add(eNode)
         }
     }
@@ -40,7 +40,7 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
     }
 
     fun findEClass(eNode: ENode): EClass? {
-        return unionFind.find(eNodeHashCons[eNode.toHashKey] ?: return null)
+        return eNodeHashCons[eNode.toHashKey]?.canonicalEClass
     }
 
     fun merge(a: EClass, b: EClass): Boolean {
@@ -54,56 +54,72 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         return true
     }
 
-    fun rebuild() {
-        // process pending merges
-        val idsToProcess = worklist.map { it }
-        worklist.clear()
-
-        val groupedEClasses = idsToProcess
-            .groupBy { unionFind.find(it) }
-
-        groupedEClasses.forEach { (canonicalEClass, pendingMergeEClasses) ->
-            pendingMergeEClasses
-                .filter { it.id != canonicalEClass.id }
-                .forEach {
-                    canonicalEClass.nodes += it.nodes
-                    eClasses.remove(it)
-                    eClassesById[it.id] = canonicalEClass // todo: should this not just be removed?
-                }
-        }
-
-        // canonicalize affected nodes
-        eNodes.forEach { it.children = it.children.map(unionFind::find) }
-
-        // replace the entire hashcons
-        eNodeHashCons.clear()
-        eClasses.forEach { eClass ->
-            eClass.nodes.forEach {
-                eNodeHashCons[it.toHashKey] = eClass
-            }
-        }
-
-        // detect congruence
-        eNodes.groupBy { it.toHashKey }
-        // union newly equivalent eclasses
-            .forEach { (_, nodes) ->
-                nodes.reduce { acc, node ->
-                    val a = findEClass(acc) ?: error("Unable to find node")
-                    val b = findEClass(node) ?: error("Unable to find node")
-                    merge(a, b)
-                    acc
-                }
-            }
-    }
-
     fun mergeAndRebuild(a: EClass, b: EClass) = merge(a, b).also { rebuild() }
 
+    fun rebuild() {
+        while (worklist.isNotEmpty()) {
+            processPendingMerges()
+            canonicalizeAllNodes()
+            propagateCongruence()
+        }
+    }
+
+    private fun processPendingMerges() {
+        val eClassesToProcess = worklist.map { it }
+        worklist.clear()
+
+        val eClassGroups = eClassesToProcess
+            .groupBy { it.canonicalEClass }
+
+        eClassGroups.forEach { (canonicalEClass, eClassesPendingMerge) ->
+            eClassesPendingMerge
+                .filter { it.id != canonicalEClass.id }
+                .forEach { eClass ->
+                    eClasses.remove(eClass)
+                    eClassesById.remove(eClass.id)
+
+                    canonicalEClass.nodes += eClass.nodes
+                }
+        }
+    }
+
+    private fun canonicalizeAllNodes() {
+        eNodes.forEach { eNode ->
+            val oldHashCons = eNode.toHashKey
+            val oldParent = eNode.parentEClass
+
+            eNode.parentEClass = eNode.parentEClass.canonicalEClass
+            eNode.childEClasses = eNode.childEClasses.map { it.canonicalEClass }
+
+            val newHashCons = eNode.toHashKey
+            val newParent = eNode.parentEClass
+
+            val nothingHasChanged = oldParent == newParent && oldHashCons == newHashCons
+            if (nothingHasChanged) return@forEach
+
+            eNodeHashCons.remove(oldHashCons)
+            eNodeHashCons[newHashCons] = newParent
+        }
+    }
+
+    private fun propagateCongruence() {
+        val congruentGroups = eNodes.groupBy { it.toHashKey }
+
+        congruentGroups.forEach { (_, congruentNodes) ->
+            val leadNode = congruentNodes.first()
+            congruentNodes.forEach { leadNode merge it }
+        }
+    }
+
     override fun toString() = print()
+
+    val EClass.canonicalEClass: EClass get() = unionFind.find(this)
+    infix fun ENode.merge(other: ENode) = merge(this.parentEClass, other.parentEClass)
 }
 
 val ENode.toHashKey get() = buildString {
     append(identifier)
-    if (children.isNotEmpty()) {
-        append("(${children.joinToString(" ")})")
+    if (childEClasses.isNotEmpty()) {
+        append("(${childEClasses.joinToString(" ")})")
     }
 }

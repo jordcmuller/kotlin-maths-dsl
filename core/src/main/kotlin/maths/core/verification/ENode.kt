@@ -1,7 +1,7 @@
 package maths.core.verification
 
-open class ENode(val identifier: String, var children: List<EClass> = listOf()) {
-    lateinit var parent: EClass
+open class ENode(val identifier: String, var childEClasses: List<EClass> = listOf()) {
+    lateinit var parentEClass: EClass
 }
 
 //data class EUnary(val operation: String, val operand: EClassId) :

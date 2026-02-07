@@ -12,7 +12,7 @@ fun <ExprType> EGraph<ExprType>.print(): String = buildString {
 
 private fun pretty(node: ENode): String = buildString {
     append(node.identifier)
-    if (node.children.isNotEmpty()) {
-        append("(${node.children.joinToString(" ")})")
+    if (node.childEClasses.isNotEmpty()) {
+        append("(${node.childEClasses.joinToString(" ")})")
     }
 }
