@@ -83,6 +83,14 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         // canonicalize affected nodes
         eNodes.forEach { it.children = it.children.map(unionFind::find) }
 
+        // replace the entire hashcons
+        eNodeHashCons.clear()
+        eClasses.forEach { eClass ->
+            eClass.nodes.forEach {
+                eNodeHashCons[it.toHashKey] = eClass.id
+            }
+        }
+
         // detect congruence
         eNodes.groupBy { it.toHashKey }
         // union newly equivalent eclasses
@@ -94,14 +102,6 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
                     acc
                 }
             }
-
-        // replace the entire hashcons
-        eNodeHashCons.clear()
-        eClasses.forEach { eClass ->
-            eClass.nodes.forEach {
-                eNodeHashCons[it.toHashKey] = eClass.id
-            }
-        }
     }
 
     fun mergeAndRebuild(a: EClassId, b: EClassId) = merge(a, b).also { rebuild() }
