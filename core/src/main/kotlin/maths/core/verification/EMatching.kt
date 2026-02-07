@@ -5,7 +5,7 @@ import maths.core.ast.Expr
 infix fun EMatcher.idMatches(identifier: String) = when (this) {
     is AnyNode -> true
     is BinaryMatcher -> operations.any { it.symbol == identifier }
-    else -> TODO("matchId not implemented yet for $this")
+    else -> TODO("idMatches not implemented yet for $this")
 }
 
 infix fun EMatcher.childrenCountMatches(size: Int) = when (this) {
@@ -35,7 +35,7 @@ fun EGraph<Expr>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchRes
             val combinedConsistentMatches = leftResults combineWith rightResults
             combinedConsistentMatches.map { EMatchResult(nodeEClassId, it) }
         }
-        else -> TODO("matchChildren not implemented yet for $matcher")
+        else -> TODO("getMatchResults not implemented yet for $matcher")
     }
 }
 
