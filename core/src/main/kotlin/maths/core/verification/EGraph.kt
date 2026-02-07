@@ -113,8 +113,8 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
 
     override fun toString() = print()
 
-    val EClass.canonicalEClass: EClass get() = unionFind.find(this)
-    infix fun ENode.merge(other: ENode) = merge(this.parentEClass, other.parentEClass)
+    private val EClass.canonicalEClass: EClass get() = unionFind.find(this)
+    private infix fun ENode.merge(other: ENode) = merge(this.parentEClass, other.parentEClass)
 }
 
 val ENode.toHashKey get() = buildString {
