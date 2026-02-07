@@ -26,4 +26,6 @@ class RewriteRule(
     val pattern: EMatcher,
     val template: EMatcher,
     val rewrite: (EMatchResult) -> RewriteResult? = { template.eMatcherToRewriteResult(it) }
-)
+) {
+    override fun toString() = "$name: $pattern -> $template"
+}
