@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.jordcmuller.kotlin-maths-dsl"
-version = "0.0.1"
+version = "0.0.4"
 val kotestVersion = "6.0.7"
 
 repositories {
