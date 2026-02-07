@@ -9,13 +9,15 @@ fun <ExprType> EGraph<ExprType>.add(rewrite: RewriteResult): EClassId = when (re
 }
 
 
-tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>) {
+tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>, maxIterations: Int = 10) {
+    if (maxIterations == 0) return
+
     rewriteRules.forEach { rule ->
         val matches = eMatch(eGraph, rule.pattern)
-        matches.forEach { match ->
-            val rewritten = rule.rewrite(match) ?: return@forEach
+        matches.forEach { eMatchResult ->
+            val rewritten = rule.rewrite(eMatchResult) ?: return@forEach
             val rewriteEClass = eGraph.add(rewritten)
-            eGraph.merge(match.eClassId, rewriteEClass)
+            eGraph.merge(eMatchResult.matchId, rewriteEClass)
         }
     }
 
@@ -23,5 +25,5 @@ tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>) {
 
     eGraph.rebuild()
 
-    saturate(eGraph, rewriteRules)
+    saturate(eGraph, rewriteRules, maxIterations-1)
 }
