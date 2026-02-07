@@ -13,7 +13,7 @@ tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>, maxI
     if (maxIterations == 0) return
 
     rewriteRules.forEach { rule ->
-        val matches = eMatch(eGraph, rule.pattern)
+        val matches = eGraph.eMatch(rule.pattern)
         matches.forEach { eMatchResult ->
             val rewritten = rule.rewrite(eMatchResult) ?: return@forEach
             val rewriteEClass = eGraph.add(rewritten)
