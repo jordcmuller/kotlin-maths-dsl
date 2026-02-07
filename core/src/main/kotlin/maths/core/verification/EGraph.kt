@@ -120,6 +120,6 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
 val ENode.toHashKey get() = buildString {
     append(identifier)
     if (childEClasses.isNotEmpty()) {
-        append("(${childEClasses.joinToString(" ")})")
+        append("(${childEClasses.map { it.id }.joinToString(" ") })")
     }
 }
