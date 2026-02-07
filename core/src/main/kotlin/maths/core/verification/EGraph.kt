@@ -18,16 +18,15 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
     }
 
     fun add(eNode: ENode): EClass {
-        val representativeEClass = find(eNode)
-        if (representativeEClass != null) return representativeEClass
-
-        processENode(eNode)
-        return createEClass(eNode)
+        return findEClass(eNode) ?: createEClass(eNode)
     }
 
     fun createEClass(eNode: ENode): EClass {
         return EClass(latestId++, mutableListOf(eNode)).also {
             processEClass(it)
+
+            eNode.parent = it
+            eNodes.add(eNode)
         }
     }
 
@@ -40,11 +39,7 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         eClassesById[eClass.id] = eClass
     }
 
-    private fun processENode(eNode: ENode) {
-        eNodes.add(eNode)
-    }
-
-    fun find(eNode: ENode): EClass? {
+    fun findEClass(eNode: ENode): EClass? {
         return unionFind.find(eNodeHashCons[eNode.toHashKey] ?: return null)
     }
 
@@ -93,8 +88,8 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         // union newly equivalent eclasses
             .forEach { (_, nodes) ->
                 nodes.reduce { acc, node ->
-                    val a = find(acc) ?: error("Unable to find node")
-                    val b = find(node) ?: error("Unable to find node")
+                    val a = findEClass(acc) ?: error("Unable to find node")
+                    val b = findEClass(node) ?: error("Unable to find node")
                     merge(a, b)
                     acc
                 }
