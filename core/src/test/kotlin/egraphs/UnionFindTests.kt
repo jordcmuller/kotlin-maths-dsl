@@ -12,12 +12,12 @@ import maths.core.verification.UnionFind
 
 class UnionFindTests : StringSpec({
     "An egraph should be empty when created" {
-        with(UnionFind()) {
+        with(UnionFind<Int>()) {
             parents shouldHaveSize 0
         }
     }
     "A constant can be added to the egraph and will reflect in the state" {
-        with(UnionFind()) {
+        with(UnionFind<Int>()) {
             add(0)
             parents shouldHaveSize 1
             parents[0] shouldBe 0

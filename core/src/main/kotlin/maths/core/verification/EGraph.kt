@@ -1,28 +1,28 @@
 package maths.core.verification
 
 open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: ExprBuilder<ExprType>) {
-    val unionFind = UnionFind()
+    val unionFind = UnionFind<EClass>()
 
     val eClasses = mutableListOf<EClass>()
     val eNodes = mutableListOf<ENode>()
 
-    val eNodeHashCons = mutableMapOf<String, EClassId>()
+    val eNodeHashCons = mutableMapOf<String, EClass>()
     val eClassesById = mutableMapOf<EClassId, EClass>()
 
     var latestId = 1
 
-    val worklist = mutableSetOf<EClassId>()
+    val worklist = mutableSetOf<EClass>()
 
-    fun add(expr: ExprType): EClassId {
+    fun add(expr: ExprType): EClass {
         return lowerer.lower(expr, ::add)
     }
 
-    fun add(eNode: ENode): EClassId {
-        val representativeEClassId = find(eNode)
-        if (representativeEClassId != null) return representativeEClassId
+    fun add(eNode: ENode): EClass {
+        val representativeEClass = find(eNode)
+        if (representativeEClass != null) return representativeEClass
 
         processENode(eNode)
-        return createEClass(eNode).id
+        return createEClass(eNode)
     }
 
     fun createEClass(eNode: ENode): EClass {
@@ -32,10 +32,10 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
     }
 
     private fun processEClass(eClass: EClass) {
-        unionFind.add(eClass.id)
+        unionFind.add(eClass)
         eClasses.add(eClass)
         eClass.nodes.forEach {
-            eNodeHashCons[it.toHashKey] = eClass.id
+            eNodeHashCons[it.toHashKey] = eClass
         }
         eClassesById[eClass.id] = eClass
     }
@@ -44,11 +44,11 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         eNodes.add(eNode)
     }
 
-    fun find(eNode: ENode): EClassId? {
+    fun find(eNode: ENode): EClass? {
         return unionFind.find(eNodeHashCons[eNode.toHashKey] ?: return null)
     }
 
-    fun merge(a: EClassId, b: EClassId): Boolean {
+    fun merge(a: EClass, b: EClass): Boolean {
         if (!unionFind.union(a, b)) return false
 
         with(worklist) {
@@ -65,18 +65,15 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         worklist.clear()
 
         val groupedEClasses = idsToProcess
-            .mapNotNull { eClassesById[it] }
-            .groupBy { unionFind.find(it.id) }
+            .groupBy { unionFind.find(it) }
 
-        groupedEClasses.forEach { (canonicalId, pendingMergeEClasses) ->
-            val canonicalEClass = eClassesById[canonicalId] ?: error("Unable to find canonical EClass during rebuild")
-
+        groupedEClasses.forEach { (canonicalEClass, pendingMergeEClasses) ->
             pendingMergeEClasses
                 .filter { it.id != canonicalEClass.id }
                 .forEach {
                     canonicalEClass.nodes += it.nodes
                     eClasses.remove(it)
-                    eClassesById[it.id] = canonicalEClass
+                    eClassesById[it.id] = canonicalEClass // todo: should this not just be removed?
                 }
         }
 
@@ -87,7 +84,7 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
         eNodeHashCons.clear()
         eClasses.forEach { eClass ->
             eClass.nodes.forEach {
-                eNodeHashCons[it.toHashKey] = eClass.id
+                eNodeHashCons[it.toHashKey] = eClass
             }
         }
 
@@ -104,7 +101,7 @@ open class EGraph<ExprType>(val lowerer: ExprLowerer<ExprType>, val builder: Exp
             }
     }
 
-    fun mergeAndRebuild(a: EClassId, b: EClassId) = merge(a, b).also { rebuild() }
+    fun mergeAndRebuild(a: EClass, b: EClass) = merge(a, b).also { rebuild() }
 
     override fun toString() = print()
 }

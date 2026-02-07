@@ -6,6 +6,7 @@ import maths.core.rewriting.dsl.anyNode
 import maths.core.rewriting.dsl.provideDelegate
 import maths.core.verification.AnyNode
 import maths.core.verification.BinaryMatcher
+import maths.core.verification.EClass
 import maths.core.verification.EMatchResult
 import maths.core.verification.RRBinary
 import maths.core.verification.RRLeaf
@@ -21,9 +22,13 @@ class PatternRewriteTests : StringSpec({
         additiveCommutativity.pattern shouldBe BinaryMatcher(AnyNode("x"), listOf(ADD), AnyNode("y"))
         additiveCommutativity.template shouldBe BinaryMatcher(AnyNode("y"), listOf(ADD), AnyNode("x"))
 
-        val matchResult = EMatchResult(0, mapOf("x" to 1, "y" to 2))
+        val xEClass = EClass(1)
+        val yEClass = EClass(2)
+        val xPlusYEClass = EClass(3)
+
+        val matchResult = EMatchResult(xPlusYEClass, mapOf("x" to xEClass, "y" to yEClass))
         val rewritten = additiveCommutativity.rewrite(matchResult)
 
-        rewritten shouldBe RRBinary(RRLeaf(2), ADD, RRLeaf(1))
+        rewritten shouldBe RRBinary(RRLeaf(yEClass), ADD, RRLeaf(xEClass))
     }
 })

@@ -21,31 +21,31 @@ fun EGraph<Expr>.eMatch(eMatcher: EMatcher, nodesToSearch: List<ENode> = eNodes)
 }
 
 fun EGraph<Expr>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchResult> {
-    val nodeEClassId = eNodeHashCons[node.toHashKey] ?: return emptyList()
+    val nodeEClass = eNodeHashCons[node.toHashKey] ?: return emptyList()
 
     return when (matcher) {
-        is AnyNode -> listOf(EMatchResult(nodeEClassId, mapOf(matcher.name to nodeEClassId)))
+        is AnyNode -> listOf(EMatchResult(nodeEClass, mapOf(matcher.name to nodeEClass)))
         is BinaryMatcher -> {
-            val leftEClass = eClassesById[node.children[0]] ?: return emptyList()
-            val rightEClass = eClassesById[node.children[1]] ?: return emptyList()
+            val leftEClass = node.children[0]
+            val rightEClass = node.children[1]
 
             val leftResults = eMatch(matcher.left, leftEClass.nodes).ifEmpty { return emptyList() }
             val rightResults = eMatch(matcher.right, rightEClass.nodes).ifEmpty { return emptyList() }
 
             val combinedConsistentMatches = leftResults combineWith rightResults
-            combinedConsistentMatches.map { EMatchResult(nodeEClassId, it) }
+            combinedConsistentMatches.map { EMatchResult(nodeEClass, it) }
         }
         else -> TODO("getMatchResults not implemented yet for $matcher")
     }
 }
 
-infix fun List<EMatchResult>.combineWith(otherList: List<EMatchResult>): List<Map<String, EClassId>> {
+infix fun List<EMatchResult>.combineWith(otherList: List<EMatchResult>): List<Map<String, EClass>> {
     return flatMap { first -> otherList.map { second -> first to second } }
         .filter { consistentMatches(it.first.matchedGroups, it.second.matchedGroups) }
         .map { it.first.matchedGroups + it.second.matchedGroups }
 }
 
-fun consistentMatches(firstMap: Map<String, EClassId>, secondMap: Map<String, EClassId>): Boolean {
+fun consistentMatches(firstMap: Map<String, EClass>, secondMap: Map<String, EClass>): Boolean {
     return secondMap.all { (matchName, eClassId) ->
         firstMap.containsKey(matchName) && firstMap[matchName] != eClassId
     }

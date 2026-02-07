@@ -12,27 +12,27 @@ import maths.core.verification.eMatch
 class EMatchingTests : StringSpec({
     val egg = MathsEGraph()
 
-    egg.add("x".v)
-    egg.add("y".v)
-    egg.add(1.c)
-    egg.add(2.c)
-    egg.add("x".v + "y".v)
-    egg.add(1.c + 2.c)
-    egg.add("x".v + 2.c)
-    egg.add("x".v + "y".v + 1.c)
+    val xEClass = egg.add("x".v)
+    val yEClass = egg.add("y".v)
+    val oneEClass = egg.add(1.c)
+    val twoEClass = egg.add(2.c)
+    val xPlusYEClass = egg.add("x".v + "y".v)
+    val onePlusTwoEClass = egg.add(1.c + 2.c)
+    val xPlusTwoEClass = egg.add("x".v + 2.c)
+    val xPlusYPlusOneEClass = egg.add("x".v + "y".v + 1.c)
 
     "AnyNode should match all nodes" {
         val result = egg.eMatch(AnyNode("any"))
 
         result.size shouldBe 8
-        result[0].matchedGroups["any"] shouldBe 1
-        result[1].matchedGroups["any"] shouldBe 2
-        result[2].matchedGroups["any"] shouldBe 3
-        result[3].matchedGroups["any"] shouldBe 4
-        result[4].matchedGroups["any"] shouldBe 5
-        result[5].matchedGroups["any"] shouldBe 6
-        result[6].matchedGroups["any"] shouldBe 7
-        result[7].matchedGroups["any"] shouldBe 8
+        result[0].matchedGroups["any"] shouldBe xEClass
+        result[1].matchedGroups["any"] shouldBe yEClass
+        result[2].matchedGroups["any"] shouldBe oneEClass
+        result[3].matchedGroups["any"] shouldBe twoEClass
+        result[4].matchedGroups["any"] shouldBe xPlusYEClass
+        result[5].matchedGroups["any"] shouldBe onePlusTwoEClass
+        result[6].matchedGroups["any"] shouldBe xPlusTwoEClass
+        result[7].matchedGroups["any"] shouldBe xPlusYPlusOneEClass
     }
 //    "AnyNode should not cause an infinite loop" {
 //         // set up an identity rule like x+0=x

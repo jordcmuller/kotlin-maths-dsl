@@ -21,6 +21,7 @@ class MathsContext {
     /** DSL Definition */
     infix fun Expr.equal(other: Expr) = (this eq other).equivalence == Equivalence.True
     infix fun Expr.notEqual(other: Expr) = (this eq other).equivalence == Equivalence.False
+
     infix fun Expr.eq(other: Expr): Equation = Equation(this, other).also(state::processEquation)
     infix fun Expr.eq(other: Int) = this eq Const(other.toDouble())
 
@@ -39,16 +40,10 @@ class MathsContext {
 
     fun variable(name: String? = null) = VariableDelegate(name)
 
-    val String.v get() = Var(this)
-
-    fun printErrors() {
-        println(state.errors.joinToString("\n"))
-    }
-
     infix fun Expr.equate(other: Expr) {
-        val leftId = state.eGraph.add(this)
-        val rightId = state.eGraph.add(other)
-        state.eGraph.mergeAndRebuild(leftId, rightId)
+        val leftEClass = state.eGraph.add(this)
+        val rightEClass = state.eGraph.add(other)
+        state.eGraph.mergeAndRebuild(leftEClass, rightEClass)
     }
 
     operator fun invoke(statementsBlock: MathsContext.() -> Unit) = statementsBlock()

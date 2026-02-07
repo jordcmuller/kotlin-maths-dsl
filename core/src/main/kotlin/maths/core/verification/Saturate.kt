@@ -3,8 +3,8 @@ package maths.core.verification
 import maths.core.ast.Expr
 import maths.core.rewriting.RewriteRule
 
-fun <ExprType> EGraph<ExprType>.add(rewrite: RewriteResult): EClassId = when (rewrite) {
-    is RRLeaf -> rewrite.eClassId
+fun <ExprType> EGraph<ExprType>.add(rewrite: RewriteResult): EClass = when (rewrite) {
+    is RRLeaf -> rewrite.eClass
     is RRBinary -> add(EBinary(add(rewrite.left), rewrite.operation.symbol, add(rewrite.right)))
 }
 
@@ -17,7 +17,7 @@ tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>, maxI
         matches.forEach { eMatchResult ->
             val rewritten = rule.rewrite(eMatchResult) ?: return@forEach
             val rewriteEClass = eGraph.add(rewritten)
-            eGraph.merge(eMatchResult.matchId, rewriteEClass)
+            eGraph.merge(eMatchResult.rootEClass, rewriteEClass)
         }
     }
 

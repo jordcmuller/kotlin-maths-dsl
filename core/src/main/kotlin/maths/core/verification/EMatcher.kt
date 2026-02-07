@@ -37,13 +37,13 @@ operator fun Number.div(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDoub
 
 
 
-sealed class EMatch(val eClassId: EClassId)
-data class EMNamedLeaf(val id: EClassId, val name: String) : EMatch(id)
+sealed class EMatch(val eClass: EClass)
+data class EMNamedLeaf(val id: EClass, val name: String) : EMatch(id)
 //data class EMLeaf(val id: EClassId) : EMatch(id)
 //data class EMBinary(val id: EClassId, val left: EMatch, val operation: Operation, val right: EMatch) : EMatch(id)
 
 sealed interface RewriteResult
-data class RRLeaf(val eClassId: EClassId) : RewriteResult
+data class RRLeaf(val eClass: EClass) : RewriteResult
 data class RRBinary(val left: RewriteResult, val operation: Operation, val right: RewriteResult) : RewriteResult
 
 fun Expr.toEMatcher(): EMatcher {

@@ -69,7 +69,7 @@ class EGraphTests : StringSpec({
             val expectedRightENode = EConst(1.0)
             val expectedRightEClass = EClass(1, mutableListOf(expectedRightENode))
 
-            val expectedOperationENode = EBinary(expectedLeftEClass.id,"+", expectedRightEClass.id)
+            val expectedOperationENode = EBinary(expectedLeftEClass,"+", expectedRightEClass)
             val expectedOperationEClass = EClass(2, mutableListOf(expectedOperationENode))
 
             eClasses shouldHaveSize 3

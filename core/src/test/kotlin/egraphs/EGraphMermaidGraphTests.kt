@@ -103,6 +103,8 @@ class EGraphMermaidGraphTests : StringSpec({
     "A composite expression in the egraph should generate a mermaid diagram which updates when the operands are merged" {
         val eGraph = MathsEGraph()
 
+        val xEClass = eGraph.add("x".v)
+        val yEClass = eGraph.add("y".v)
         eGraph.add("x".v + "y".v)
 
         eGraph.toMermaid() shouldBe """
@@ -127,7 +129,7 @@ class EGraphMermaidGraphTests : StringSpec({
                 E2_N0 --> EClass1
         """.trimIndent()
 
-        eGraph.mergeAndRebuild(0, 1)
+        eGraph.mergeAndRebuild(xEClass, yEClass)
 
         eGraph.toMermaid() shouldBe """
             graph TD
