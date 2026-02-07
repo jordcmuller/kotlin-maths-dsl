@@ -4,6 +4,7 @@ import maths.core.ast.Expr
 
 infix fun EMatcher.idMatches(identifier: String) = when (this) {
     is AnyNode -> true
+    is ConstMatcher -> value.toString() == identifier
     is BinaryMatcher -> operations.any { it.symbol == identifier }
     else -> TODO("idMatches not implemented yet for $this")
 }
