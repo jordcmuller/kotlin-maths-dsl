@@ -1,30 +1,30 @@
 package maths.core.verification
 
-class UnionFind {
-    val parents = mutableMapOf<EClassId, EClassId>()
+class UnionFind<T> {
+    val parents = mutableMapOf<T, T>()
 
-    fun add(eClassId: EClassId) {
-        parents.getOrPut(eClassId) { eClassId }
+    fun add(item: T) {
+        parents.getOrPut(item) { item }
     }
 
-    fun find(eClassId: EClassId): EClassId {
-        if (eClassId.isRepresentative) return eClassId
+    fun find(item: T): T {
+        if (item.isRepresentative) return item
 
-        eClassId.parent = eClassId.parent.representative
-        return eClassId.parent.representative
+        item.parent = item.parent.representative
+        return item.parent.representative
     }
 
-    fun union(a: EClassId, b: EClassId): Boolean {
+    fun union(a: T, b: T): Boolean {
         if (a isInSameEClassAs b) return false
 
         b.representative.parent = a.representative
         return true
     }
 
-    private var EClassId.parent
-        get() = parents[this] ?: error("Non-existent eClassId")
+    private var T.parent: T
+        get() = parents[this] ?: error("Non-existent item $this in UnionFind")
         set(value) { parents[this] = value }
-    private val EClassId.representative get() = find(this)
-    private val EClassId.isRepresentative get() = this == parent
-    private infix fun EClassId.isInSameEClassAs(other: EClassId) = representative == other.representative
+    private val T.representative get() = find(this)
+    private val T.isRepresentative get() = this == parent
+    private infix fun T.isInSameEClassAs(other: T) = representative == other.representative
 }
