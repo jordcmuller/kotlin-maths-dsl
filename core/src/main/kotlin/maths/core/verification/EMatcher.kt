@@ -10,13 +10,23 @@ import maths.core.ast.Operation.MUL
 import maths.core.ast.Operation.SUB
 import maths.core.ast.Var
 
-sealed class EMatcher(val children: List<EMatcher> = emptyList())
-data object AnyVar: EMatcher()
-data object AnyConst: EMatcher()
-data class AnyNode(val name: String): EMatcher()
-data class ConstMatcher(val value: Double) : EMatcher()
-data class VarMatcher(val name: String) : EMatcher()
-data class BinaryMatcher(val left: EMatcher, val operations: List<Operation>, val right: EMatcher) : EMatcher(listOf(left, right))
+sealed class EMatcher(val children: List<EMatcher> = emptyList()) {
+    override fun toString(): String {
+        return when (this) {
+            is AnyNode -> name
+            is ConstMatcher -> "$value"
+            is VarMatcher -> "'$name'"
+            is BinaryMatcher -> "($left ${operations.joinToString("/") { it.symbol }} $right)"
+            else -> TODO("toString not yet implemented: $this")
+        }
+    }
+}
+object AnyVar: EMatcher()
+object AnyConst: EMatcher()
+class AnyNode(val name: String): EMatcher()
+class ConstMatcher(val value: Double) : EMatcher()
+class VarMatcher(val name: String) : EMatcher()
+class BinaryMatcher(val left: EMatcher, val operations: List<Operation>, val right: EMatcher) : EMatcher(listOf(left, right))
 
 
 
