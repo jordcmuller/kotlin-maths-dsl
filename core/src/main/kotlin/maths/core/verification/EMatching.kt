@@ -1,7 +1,5 @@
 package maths.core.verification
 
-import maths.core.ast.Expr
-
 infix fun EMatcher.idMatches(identifier: String) = when (this) {
     is AnyNode -> true
     is ConstMatcher -> value.toString() == identifier
@@ -14,14 +12,14 @@ infix fun EMatcher.childrenCountMatches(size: Int) = when (this) {
     else -> children.size == size
 }
 
-fun EGraph<Expr>.eMatch(eMatcher: EMatcher, nodesToSearch: List<ENode> = eNodes): List<EMatchResult> {
+fun <ExprType> EGraph<ExprType>.eMatch(eMatcher: EMatcher, nodesToSearch: List<ENode> = eNodes): List<EMatchResult> {
     return nodesToSearch
         .filter { eMatcher idMatches it.identifier }
         .filter { eMatcher childrenCountMatches it.childEClasses.size }
         .flatMap { getMatchResults(eMatcher, it) }
 }
 
-fun EGraph<Expr>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchResult> {
+fun <ExprType> EGraph<ExprType>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchResult> {
     val nodeEClass = eNodeHashCons[node.toHashKey] ?: return emptyList()
 
     return when (matcher) {

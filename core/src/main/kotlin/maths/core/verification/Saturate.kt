@@ -1,6 +1,5 @@
 package maths.core.verification
 
-import maths.core.ast.Expr
 import maths.core.rewriting.RewriteRule
 
 fun <ExprType> EGraph<ExprType>.add(rewrite: RewriteResult): EClass = when (rewrite) {
@@ -8,22 +7,21 @@ fun <ExprType> EGraph<ExprType>.add(rewrite: RewriteResult): EClass = when (rewr
     is RRBinary -> add(EBinary(add(rewrite.left), rewrite.operation.symbol, add(rewrite.right)))
 }
 
-
-tailrec fun saturate(eGraph: EGraph<Expr>, rewriteRules: List<RewriteRule>, maxIterations: Int = 10) {
+tailrec fun <ExprType> EGraph<ExprType>.saturate(rewriteRules: List<RewriteRule>, maxIterations: Int = 10) {
     if (maxIterations == 0) return
 
     rewriteRules.forEach { rule ->
-        val matches = eGraph.eMatch(rule.pattern)
+        val matches = eMatch(rule.pattern)
         matches.forEach { eMatchResult ->
             val rewritten = rule.rewrite(eMatchResult) ?: return@forEach
-            val rewriteEClass = eGraph.add(rewritten)
-            eGraph.merge(eMatchResult.rootEClass, rewriteEClass)
+            val rewriteEClass = add(rewritten)
+            merge(eMatchResult.rootEClass, rewriteEClass)
         }
     }
 
-    if (eGraph.worklist.isEmpty()) return
+    if (worklist.isEmpty()) return
 
-    eGraph.rebuild()
+    rebuild()
 
-    saturate(eGraph, rewriteRules, maxIterations-1)
+    saturate(rewriteRules, maxIterations-1)
 }
