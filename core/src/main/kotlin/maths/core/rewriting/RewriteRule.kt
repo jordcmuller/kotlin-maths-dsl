@@ -15,7 +15,7 @@ import maths.core.verification.UnaryMatcher
 
 private fun EMatcher.eMatcherToRewriteResult(matchResult: EMatchResult): RewriteResult {
     return when (this) {
-        is AnyNode -> RRLeaf(matchResult.matchedGroups[name]!!)
+        is AnyNode -> RRLeaf(matchResult[this])
         is ConstMatcher -> RRConst(Const(value))
         is UnaryMatcher -> RRUnary(operation, operand.eMatcherToRewriteResult(matchResult))
         is BinaryMatcher -> RRBinary(
