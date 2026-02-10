@@ -20,7 +20,7 @@ private fun EMatcher.eMatcherToRewriteResult(matchResult: EMatchResult): Rewrite
         is UnaryMatcher -> RRUnary(operation, operand.eMatcherToRewriteResult(matchResult))
         is BinaryMatcher -> RRBinary(
             left.eMatcherToRewriteResult(matchResult),
-            operations.first(), // TODO: make this respect the operation of the matched expression if multiple operations can be matched
+            operation,
             right.eMatcherToRewriteResult(matchResult)
         )
         else -> error("Unknown template $this")

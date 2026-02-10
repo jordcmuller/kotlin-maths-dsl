@@ -16,7 +16,7 @@ sealed class EMatcher(val children: List<EMatcher> = emptyList()) {
             is AnyNode -> name
             is ConstMatcher -> "$value"
             is VarMatcher -> "'$name'"
-            is BinaryMatcher -> "($left ${operations.joinToString("/") { it.symbol }} $right)"
+            is BinaryMatcher -> "($left ${operation.symbol} $right)"
             else -> TODO("toString not yet implemented: $this")
         }
     }
@@ -31,20 +31,22 @@ class UnaryMatcher(val operation: Operation, val operand: EMatcher) : EMatcher(l
 
 
 
-operator fun EMatcher.plus(that: EMatcher) = BinaryMatcher(this, listOf(ADD), that)
-operator fun EMatcher.minus(that: EMatcher) = BinaryMatcher(this, listOf(SUB), that)
-operator fun EMatcher.times(that: EMatcher) = BinaryMatcher(this, listOf(MUL), that)
-operator fun EMatcher.div(that: EMatcher) = BinaryMatcher(this, listOf(DIV), that)
+operator fun EMatcher.plus(that: EMatcher) = BinaryMatcher(this, ADD, that)
+operator fun EMatcher.minus(that: EMatcher) = BinaryMatcher(this, SUB, that)
+operator fun EMatcher.unaryMinus() = UnaryMatcher(SUB, this)
+operator fun EMatcher.times(that: EMatcher) = BinaryMatcher(this, MUL, that)
+operator fun EMatcher.div(that: EMatcher) = BinaryMatcher(this, DIV, that)
 
-operator fun EMatcher.plus(that: Number) = BinaryMatcher(this, listOf(ADD), ConstMatcher(that.toDouble()))
-operator fun EMatcher.minus(that: Number) = BinaryMatcher(this, listOf(SUB), ConstMatcher(that.toDouble()))
-operator fun EMatcher.times(that: Number) = BinaryMatcher(this, listOf(MUL), ConstMatcher(that.toDouble()))
-operator fun EMatcher.div(that: Number) = BinaryMatcher(this, listOf(DIV), ConstMatcher(that.toDouble()))
+operator fun EMatcher.plus(that: Number) = BinaryMatcher(this, ADD, ConstMatcher(that.toDouble()))
+operator fun EMatcher.minus(that: Number) = BinaryMatcher(this, SUB, ConstMatcher(that.toDouble()))
+operator fun EMatcher.times(that: Number) = BinaryMatcher(this, MUL, ConstMatcher(that.toDouble()))
+operator fun EMatcher.div(that: Number) = BinaryMatcher(this, DIV, ConstMatcher(that.toDouble()))
 
-operator fun Number.plus(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), listOf(ADD), that)
-operator fun Number.minus(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), listOf(SUB), that)
-operator fun Number.times(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), listOf(MUL), that)
-operator fun Number.div(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), listOf(DIV), that)
+operator fun Number.plus(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), ADD, that)
+operator fun Number.minus(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), SUB, that)
+operator fun Number.unaryMinus() = UnaryMatcher(SUB, ConstMatcher(this.toDouble()))
+operator fun Number.times(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), MUL, that)
+operator fun Number.div(that: EMatcher) = BinaryMatcher(ConstMatcher(this.toDouble()), DIV, that)
 
 
 
@@ -63,7 +65,7 @@ fun Expr.toEMatcher(): EMatcher {
     return when (this) {
         is Const -> ConstMatcher(value)
         is Var -> VarMatcher(name)
-        is BinaryExpr -> BinaryMatcher(left.toEMatcher(), listOf(operation), right.toEMatcher())
+        is BinaryExpr -> BinaryMatcher(left.toEMatcher(), operation, right.toEMatcher())
         else -> TODO("EMatcher mapping for $javaClass not supported yet")
     }
 }

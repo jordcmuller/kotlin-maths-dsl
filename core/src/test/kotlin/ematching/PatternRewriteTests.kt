@@ -19,8 +19,8 @@ class PatternRewriteTests : StringSpec({
         val additiveCommutativity by x + y to y + x
 
         additiveCommutativity.name shouldBe "additiveCommutativity"
-        additiveCommutativity.pattern shouldBe BinaryMatcher(AnyNode("x"), listOf(ADD), AnyNode("y"))
-        additiveCommutativity.template shouldBe BinaryMatcher(AnyNode("y"), listOf(ADD), AnyNode("x"))
+        additiveCommutativity.pattern shouldBe BinaryMatcher(AnyNode("x"), ADD, AnyNode("y"))
+        additiveCommutativity.template shouldBe BinaryMatcher(AnyNode("y"), ADD, AnyNode("x"))
 
         val xEClass = EClass(1)
         val yEClass = EClass(2)
