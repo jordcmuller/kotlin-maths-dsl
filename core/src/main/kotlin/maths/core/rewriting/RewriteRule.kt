@@ -1,5 +1,6 @@
 package maths.core.rewriting
 
+import maths.core.ast.Const
 import maths.core.verification.AnyNode
 import maths.core.verification.BinaryMatcher
 import maths.core.verification.ConstMatcher
@@ -22,16 +23,22 @@ private fun EMatcher.eMatcherToRewriteResult(matchResult: EMatchResult): Rewrite
             operations.first(), // TODO: make this respect the operation of the matched expression if multiple operations can be matched
             right.eMatcherToRewriteResult(matchResult)
         )
-        else -> error("Unknown template")
+        else -> error("Unknown template $this")
     }
 }
 
-
-class RewriteRule(
+abstract class RewriteRule(
     val name: String,
     val pattern: EMatcher,
-    val template: EMatcher,
-    val rewrite: (EMatchResult) -> RewriteResult? = { template.eMatcherToRewriteResult(it) }
 ) {
+    abstract val rewrite: (EMatchResult) -> RewriteResult?
+}
+
+class TemplateRewriteRule (
+    name: String,
+    pattern: EMatcher,
+    val template: EMatcher,
+): RewriteRule(name, pattern) {
+    override val rewrite: (EMatchResult) -> RewriteResult? = { template.eMatcherToRewriteResult(it) }
     override fun toString() = "$name: $pattern -> $template"
 }
