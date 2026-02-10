@@ -1,8 +1,9 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import maths.core.dsl.maths
-import maths.core.ast.Equivalence
+import maths.core.dsl.minus
 import maths.core.dsl.plus
+import maths.core.dsl.unaryMinus
 
 class AdditionPropertyTests : StringSpec({
     "addition is commutative" {
@@ -10,7 +11,7 @@ class AdditionPropertyTests : StringSpec({
             val x by variable()
             val y by variable()
 
-            (x + y eq y + x).equivalence shouldBe Equivalence.True
+            x + y eq y + x shouldBe true
         }
    }
 
@@ -20,8 +21,8 @@ class AdditionPropertyTests : StringSpec({
             val y by variable()
             val z by variable()
 
-            (x + (y + z) eq (x + y) + z).equivalence shouldBe Equivalence.True
-            ((x + y) + z eq x + (y + z)).equivalence shouldBe Equivalence.True
+            x + (y + z) eq (x + y) + z shouldBe true
+            (x + y) + z eq x + (y + z) shouldBe true
         }
    }
 
@@ -31,15 +32,24 @@ class AdditionPropertyTests : StringSpec({
             val y by variable()
             val z by variable()
 
-            (x + (y + z) eq (y + x) + z).equivalence shouldBe Equivalence.True
+            x + (y + z) equal (y + x) + z shouldBe true
         }
    }
 
-    "zero is the additive identity" { // TODO: this one will be interesting
+    "zero is the additive identity" {
         maths {
             val x by variable()
 
-            (x + 0 eq x).equivalence shouldBe Equivalence.True
+            x + 0 equal x shouldBe true
+        }
+    }
+
+    "Adding a negative is the same as subtracting a positive" {
+        maths {
+            val x by variable()
+            val y by variable()
+
+            x - y equal x + (-y) shouldBe true
         }
     }
 })

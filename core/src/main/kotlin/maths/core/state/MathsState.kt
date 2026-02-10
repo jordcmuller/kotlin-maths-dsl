@@ -9,10 +9,12 @@ import maths.core.format.readable
 import maths.core.rewriting.additiveAssociativity
 import maths.core.rewriting.additiveCommutativity
 import maths.core.rewriting.additiveIdentity
+import maths.core.rewriting.additiveInverse
 import maths.core.rewriting.distributivity
 import maths.core.rewriting.multiplicativeAssociativity
 import maths.core.rewriting.multiplicativeCommutativity
 import maths.core.rewriting.multiplicativeIdentity
+import maths.core.rewriting.multiplicativeInverse
 import maths.core.verification.MathsEGraph
 
 class MathsState {
@@ -21,9 +23,11 @@ class MathsState {
         additiveCommutativity,
         additiveAssociativity,
         additiveIdentity,
+        additiveInverse,
         multiplicativeCommutativity,
         multiplicativeAssociativity,
         multiplicativeIdentity,
+        multiplicativeInverse,
         distributivity
     )
 
