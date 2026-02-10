@@ -3,7 +3,8 @@ package maths.core.verification
 infix fun EMatcher.idMatches(identifier: String) = when (this) {
     is AnyNode -> true
     is ConstMatcher -> value.toString() == identifier
-    is BinaryMatcher -> operations.any { it.symbol == identifier }
+    is UnaryMatcher -> operation.symbol == identifier
+    is BinaryMatcher -> operation.symbol == identifier
     else -> TODO("idMatches not implemented yet for $this")
 }
 
@@ -24,6 +25,14 @@ fun <ExprType> EGraph<ExprType>.getMatchResults(matcher: EMatcher, node: ENode):
 
     return when (matcher) {
         is AnyNode -> listOf(EMatchResult(nodeEClass, mapOf(matcher.name to nodeEClass)))
+        is ConstMatcher -> listOf(EMatchResult(nodeEClass))
+        is UnaryMatcher -> {
+            val operandEClass = node.childEClasses[0]
+
+            val operandResults = eMatch(matcher.operand, operandEClass.nodes).ifEmpty { return emptyList() }
+
+            operandResults.map { EMatchResult(nodeEClass, it.matchedGroups) }
+        }
         is BinaryMatcher -> {
             val leftEClass = node.childEClasses[0]
             val rightEClass = node.childEClasses[1]

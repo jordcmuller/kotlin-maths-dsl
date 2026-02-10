@@ -2,10 +2,11 @@ package maths.core.dsl
 
 import maths.core.ast.*
 
-operator fun Double.plus(e: Expr) = Add(Const(this), e)
-operator fun Double.times(e: Expr) = Mul(Const(this), e)
-operator fun Int.plus(e: Expr) = Add(Const(this.toDouble()), e)
-operator fun Int.times(e: Expr) = Mul(Const(this.toDouble()), e)
+operator fun Number.plus(e: Expr) = Add(Const(this.toDouble()), e)
+operator fun Number.minus(e: Expr) = Sub(Const(this.toDouble()), e)
+operator fun Number.times(e: Expr) = Mul(Const(this.toDouble()), e)
+operator fun Number.div(e: Expr) = Div(Const(this.toDouble()), e)
+operator fun Number.unaryMinus() = Neg(Const(this.toDouble()))
 operator fun Expr.plus(other: Expr) = Add(this, other)
 operator fun Expr.minus(other: Expr) = Sub(this, other)
 operator fun Expr.times(other: Expr) = Mul(this, other)

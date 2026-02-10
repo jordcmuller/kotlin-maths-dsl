@@ -26,7 +26,8 @@ object AnyConst: EMatcher()
 class AnyNode(val name: String): EMatcher()
 class ConstMatcher(val value: Double) : EMatcher()
 class VarMatcher(val name: String) : EMatcher()
-class BinaryMatcher(val left: EMatcher, val operations: List<Operation>, val right: EMatcher) : EMatcher(listOf(left, right))
+class BinaryMatcher(val left: EMatcher, val operation: Operation, val right: EMatcher) : EMatcher(listOf(left, right))
+class UnaryMatcher(val operation: Operation, val operand: EMatcher) : EMatcher(listOf(operand))
 
 
 
@@ -54,6 +55,8 @@ data class EMNamedLeaf(val id: EClass, val name: String) : EMatch(id)
 
 sealed interface RewriteResult
 data class RRLeaf(val eClass: EClass) : RewriteResult
+data class RRConst<ExprType: Expr>(val value: ExprType) : RewriteResult
+data class RRUnary(val operation: Operation, val operand: RewriteResult) : RewriteResult
 data class RRBinary(val left: RewriteResult, val operation: Operation, val right: RewriteResult) : RewriteResult
 
 fun Expr.toEMatcher(): EMatcher {

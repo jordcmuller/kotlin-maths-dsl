@@ -51,7 +51,11 @@ class Div(left: Expr, right: Expr) : BinaryExpr(left, Operation.DIV, right)
 
 class Pow(val base: Expr, val exp: Expr) : BinaryExpr(base, Operation.MUL, exp)
 
-class Neg(val child: Expr) : Expr
+open class UnaryExpr(val operation: Operation, val operand: Expr) : Expr {
+    override fun toString() = "$operand$operation"
+}
+
+class Neg(val child: Expr) : UnaryExpr(SUB, child)
 
 class Func(val name: String, val arg: Expr) : Expr
 

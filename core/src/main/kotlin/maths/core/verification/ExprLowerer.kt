@@ -14,17 +14,14 @@ class MathsLowerer : ExprLowerer<Expr> {
             is Var -> add(EVar(expr.name))
 
             is BinaryExpr -> {
-                val operator = when (expr.operation) {
-                    ADD -> "+"
-                    SUB -> "-"
-                    MUL -> "*"
-                    DIV -> "/"
-                    else -> error("Unknown operator $expr")
-                }
-
                 val l = lower(expr.left, add)
                 val r = lower(expr.right, add)
-                add(EBinary(l, operator, r))
+                add(EBinary(l, expr.operation.symbol, r))
+            }
+
+            is UnaryExpr -> {
+                val operand = lower(expr.operand, add)
+                add(EUnary(expr.operation.symbol, operand))
             }
 
             else -> error("Unknown expression")
