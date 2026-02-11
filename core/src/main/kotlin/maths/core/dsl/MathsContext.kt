@@ -25,19 +25,6 @@ class MathsContext {
     infix fun Expr.eq(other: Expr): Equation = Equation(this, other).also(state::processEquation)
     infix fun Expr.eq(other: Int) = this eq Const(other.toDouble())
 
-    // Variable delegate
-    inner class VariableDelegate(private val name: String? = null) {
-        lateinit var variableDeclaration: VariableDeclaration
-
-        operator fun getValue(thisRef: Any?, property: KProperty<*>) = variableDeclaration.variable
-
-        operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): VariableDelegate {
-            variableDeclaration = VariableDeclaration(name ?: property.name)
-            state.processVariableDeclaration(variableDeclaration)
-            return this
-        }
-    }
-
     fun variable(name: String? = null) = VariableDelegate(name)
 
     infix fun Expr.equate(other: Expr) {

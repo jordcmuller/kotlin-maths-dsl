@@ -8,6 +8,7 @@ import maths.core.ast.Operation.ADD
 import maths.core.ast.Operation.DIV
 import maths.core.ast.Operation.MUL
 import maths.core.ast.Operation.SUB
+import maths.core.ast.UnaryExpr
 import maths.core.ast.Var
 
 sealed class EMatcher(val children: List<EMatcher> = emptyList()) {
@@ -64,7 +65,8 @@ data class RRBinary(val left: RewriteResult, val operation: Operation, val right
 fun Expr.toEMatcher(): EMatcher {
     return when (this) {
         is Const -> ConstMatcher(value)
-        is Var -> VarMatcher(name)
+        is Var -> AnyNode(name)
+        is UnaryExpr -> UnaryMatcher(operation, operand.toEMatcher())
         is BinaryExpr -> BinaryMatcher(left.toEMatcher(), operation, right.toEMatcher())
         else -> TODO("EMatcher mapping for $javaClass not supported yet")
     }

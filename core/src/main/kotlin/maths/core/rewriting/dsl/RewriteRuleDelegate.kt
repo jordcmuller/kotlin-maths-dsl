@@ -1,7 +1,9 @@
 package maths.core.rewriting.dsl
 
+import maths.core.ast.Expr
 import maths.core.rewriting.TemplateRewriteRule
 import maths.core.verification.EMatcher
+import maths.core.verification.toEMatcher
 import kotlin.reflect.KProperty
 
 class RewriteRuleDelegate(name: String, pattern: EMatcher, template: EMatcher) {
@@ -10,4 +12,5 @@ class RewriteRuleDelegate(name: String, pattern: EMatcher, template: EMatcher) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>) = rule
 }
 
-operator fun Pair<EMatcher, EMatcher>.provideDelegate(thisRef: Any?, property: KProperty<*>) = RewriteRuleDelegate(property.name, first, second)
+operator fun Pair<Expr, Expr>.provideDelegate(thisRef: Any?, property: KProperty<*>) =
+    RewriteRuleDelegate(property.name, first.toEMatcher(), second.toEMatcher())

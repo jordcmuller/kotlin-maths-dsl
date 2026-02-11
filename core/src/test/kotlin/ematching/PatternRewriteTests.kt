@@ -2,7 +2,8 @@ package ematching
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import maths.core.rewriting.dsl.anyNode
+import maths.core.dsl.plus
+import maths.core.dsl.variable
 import maths.core.rewriting.dsl.provideDelegate
 import maths.core.verification.AnyNode
 import maths.core.verification.BinaryMatcher
@@ -10,12 +11,11 @@ import maths.core.verification.EClass
 import maths.core.verification.EMatchResult
 import maths.core.verification.RRBinary
 import maths.core.verification.RRLeaf
-import maths.core.verification.plus
 
 class PatternRewriteTests : StringSpec({
     "A rewrite rule should be simple and map a pattern to a template" {
-        val x by anyNode()
-        val y by anyNode()
+        val x by variable()
+        val y by variable()
         val additiveCommutativity by x + y to y + x
 
         additiveCommutativity.name shouldBe "additiveCommutativity"
