@@ -3,7 +3,6 @@ package equality
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import maths.core.dsl.maths
-import maths.core.ast.Equivalence
 import maths.core.dsl.plus
 import maths.core.dsl.times
 
@@ -11,7 +10,7 @@ class EqualityPropertiesTests : StringSpec({
     "Equality is reflexive: For every x, one has x = x." {
         maths {
             val x by variable()
-            (x eq x).equivalence shouldBe Equivalence.True
+            x equal x shouldBe true
         }
     }
 
@@ -19,8 +18,8 @@ class EqualityPropertiesTests : StringSpec({
         maths {
             val a by variable()
             val b by variable()
-            a eq b
-            (b eq a).equivalence shouldBe Equivalence.True
+            a equate b
+            b equal a shouldBe true
         }
     }
 
@@ -29,17 +28,17 @@ class EqualityPropertiesTests : StringSpec({
             val a by variable()
             val b by variable()
             val c by variable()
-            a eq b
-            b eq c
-            (a eq c).equivalence shouldBe Equivalence.True
+            a equate b
+            b equate c
+            a equal c shouldBe true
         }
     }
 
     "Additive identity with reflexivity" {
         maths {
             val x by variable()
-            (x + 0 eq x).equivalence shouldBe Equivalence.True
-            (x eq x + 0).equivalence shouldBe Equivalence.True
+            x + 0 equal x shouldBe true
+            x equal x + 0 shouldBe true
         }
     }
 
@@ -49,7 +48,7 @@ class EqualityPropertiesTests : StringSpec({
             val b by variable()
             val c by variable()
 
-            (a * b * c eq b * (a * c)).equivalence shouldBe Equivalence.True
+            a * b * c equal b * (a * c) shouldBe true
         }
     }
 
