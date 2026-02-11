@@ -1,5 +1,4 @@
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.collections.shouldMatchEach
 import io.kotest.matchers.shouldBe
 import maths.core.ast.VariableDeclaration
 import maths.core.dsl.maths
