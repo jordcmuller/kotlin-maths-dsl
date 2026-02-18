@@ -23,3 +23,49 @@ val Expr.squared get() = Pow(this, Const(2.toDouble()))
 val Number.c get() = Const(this.toDouble())
 
 val String.v get() = Var(this)
+
+operator fun Func.invoke(): Expr {
+    require(params.isEmpty()) { "Only functions with no parameters can be invoked with no arguments." }
+    return functionBody
+}
+
+operator fun Func.invoke(vararg args: Expr): Expr {
+    require(params.size == args.size) { "Function call requires ${params.size} arguments but ${args.size} were given." }
+
+    val bindings = params.map { it.name }.zip(args).toMap()
+
+    return createFunctionEvaluation(functionBody, bindings)
+}
+
+operator fun Func.invoke(vararg func: Func): Func {
+    require(params.size == func.size) { "Function call requires ${params.size} arguments but ${func.size} were given." }
+
+    val bindings = params.map { it.name }.zip(func).toMap()
+    val newFunctionBody = createFunctionEvaluation(functionBody, bindings)
+
+    return Func(
+        "$name of ${func.joinToString(", ") { it.name } }",
+        func.flatMap { it.params },
+        newFunctionBody
+    )
+}
+
+private fun createFunctionEvaluation(functionExpr: Expr, parameterBindings: Map<String, Expr>): Expr {
+    return when (functionExpr) {
+        is Var -> {
+            val value = parameterBindings[functionExpr.name] ?: error("Variable does not exist: ${functionExpr.name}")
+            if (value is Func) value.functionBody
+            else value
+        }
+        is Const -> Const(functionExpr.value)
+        is UnaryExpr -> UnaryExpr(functionExpr.operation, createFunctionEvaluation(functionExpr.operand, parameterBindings))
+        is BinaryExpr -> BinaryExpr(
+            createFunctionEvaluation(functionExpr.left, parameterBindings),
+            functionExpr.operation,
+            createFunctionEvaluation(functionExpr.right, parameterBindings)
+        )
+        else -> error("Not yet implemented for ${functionExpr.javaClass}")
+    }
+}
+
+infix fun Func.of(other: Func) = this(other)
