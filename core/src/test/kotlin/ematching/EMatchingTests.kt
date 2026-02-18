@@ -25,14 +25,14 @@ class EMatchingTests : StringSpec({
         val result = egg.eMatch(AnyNode("any"))
 
         result.size shouldBe 8
-        result[0].matchedGroups["any"] shouldBe xEClass
-        result[1].matchedGroups["any"] shouldBe yEClass
-        result[2].matchedGroups["any"] shouldBe oneEClass
-        result[3].matchedGroups["any"] shouldBe twoEClass
-        result[4].matchedGroups["any"] shouldBe xPlusYEClass
-        result[5].matchedGroups["any"] shouldBe onePlusTwoEClass
-        result[6].matchedGroups["any"] shouldBe xPlusTwoEClass
-        result[7].matchedGroups["any"] shouldBe xPlusYPlusOneEClass
+        result[0].matchedExpressions["any"] shouldBe xEClass
+        result[1].matchedExpressions["any"] shouldBe yEClass
+        result[2].matchedExpressions["any"] shouldBe oneEClass
+        result[3].matchedExpressions["any"] shouldBe twoEClass
+        result[4].matchedExpressions["any"] shouldBe xPlusYEClass
+        result[5].matchedExpressions["any"] shouldBe onePlusTwoEClass
+        result[6].matchedExpressions["any"] shouldBe xPlusTwoEClass
+        result[7].matchedExpressions["any"] shouldBe xPlusYPlusOneEClass
     }
 //    "AnyNode should not cause an infinite loop" {
 //         // set up an identity rule like x+0=x

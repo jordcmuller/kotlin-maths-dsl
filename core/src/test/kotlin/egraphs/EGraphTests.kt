@@ -19,9 +19,8 @@ class EGraphTests : StringSpec({
         with(MathsEGraph()) {
             eClasses shouldBe emptyList()
             eNodes shouldBe emptyList()
-            eClassesById shouldBe emptyMap()
             eNodeHashCons shouldBe emptyMap()
-            latestId shouldBe 0
+            latestId shouldBe 1
             worklist shouldBe emptyList()
         }
     }
@@ -34,8 +33,6 @@ class EGraphTests : StringSpec({
 
             eClasses shouldBe mutableListOf(expectedEClass)
             eNodes shouldBe mutableListOf(expectedENode)
-            eClassesById shouldHaveSize 1
-            eClassesById shouldBe mutableMapOf(expectedEClass.id to expectedEClass)
             eNodeHashCons shouldHaveSize 1
             eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass.id)
             latestId shouldBe 1
@@ -51,8 +48,6 @@ class EGraphTests : StringSpec({
 
             eClasses shouldBe mutableListOf(expectedEClass)
             eNodes shouldBe mutableListOf(expectedENode)
-            eClassesById shouldHaveSize 1
-            eClassesById shouldBe mutableMapOf(expectedEClass.id to expectedEClass)
             eNodeHashCons shouldHaveSize 1
             eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass.id)
             latestId shouldBe 1
@@ -76,12 +71,6 @@ class EGraphTests : StringSpec({
             eClasses shouldBe mutableListOf(expectedLeftEClass, expectedRightEClass, expectedOperationEClass)
             eNodes shouldHaveSize 3
             eNodes shouldBe mutableListOf(expectedLeftENode, expectedRightENode, expectedOperationENode)
-            eClassesById shouldHaveSize 3
-            eClassesById shouldBe mutableMapOf(
-                expectedLeftEClass.id to expectedLeftEClass,
-                expectedRightEClass.id to expectedRightEClass,
-                expectedOperationEClass.id to expectedOperationEClass,
-            )
             eNodeHashCons shouldHaveSize 3
             eNodeHashCons shouldBe mutableMapOf(
                 expectedLeftENode.toHashKey to expectedLeftEClass.id,

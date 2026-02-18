@@ -3,11 +3,7 @@ package egraphs
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import maths.core.dsl.c
 import maths.core.verification.EClass
-import maths.core.verification.EGraph
-import maths.core.verification.ENode
-import maths.core.verification.MathsLowerer
 import maths.core.verification.UnionFind
 
 class UnionFindTests : StringSpec({

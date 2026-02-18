@@ -11,7 +11,7 @@ class AdditionPropertyTests : StringSpec({
             val x by variable()
             val y by variable()
 
-            x + y eq y + x shouldBe true
+            x + y equal y + x shouldBe true
         }
    }
 
@@ -21,8 +21,8 @@ class AdditionPropertyTests : StringSpec({
             val y by variable()
             val z by variable()
 
-            x + (y + z) eq (x + y) + z shouldBe true
-            (x + y) + z eq x + (y + z) shouldBe true
+            x + (y + z) equal (x + y) + z shouldBe true
+            (x + y) + z equal x + (y + z) shouldBe true
         }
    }
 
