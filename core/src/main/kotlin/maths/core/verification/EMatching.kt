@@ -1,6 +1,7 @@
 package maths.core.verification
 
 import maths.core.ast.Expr
+import maths.core.verification.extraction.canonicalForm
 
 infix fun EMatcher.idMatches(identifier: String) = when (this) {
     is AnyNode -> true
@@ -24,16 +25,17 @@ fun <ExprType: Expr> EGraph<ExprType>.eMatch(eMatcher: EMatcher, nodesToSearch: 
 
 fun <ExprType: Expr> EGraph<ExprType>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchResult> {
     val nodeEClass = eNodeHashCons[node.toHashKey] ?: return emptyList()
+    val nodeCanonicalForm = nodeEClass.canonicalForm
 
     return when (matcher) {
-        is AnyNode -> listOf(EMatchResult(nodeEClass, mapOf(matcher.name to nodeEClass)))
+        is AnyNode -> listOf(EMatchResult(nodeEClass, mapOf(matcher.name to nodeCanonicalForm)))
         is ConstMatcher -> listOf(EMatchResult(nodeEClass))
         is UnaryMatcher -> {
             val operandEClass = node.childEClasses[0]
 
             val operandResults = eMatch(matcher.operand, operandEClass.nodes).ifEmpty { return emptyList() }
 
-            operandResults.map { EMatchResult(nodeEClass, it.matchedGroups) }
+            operandResults.map { EMatchResult(nodeEClass, it.matchedExpressions) }
         }
         is BinaryMatcher -> {
             val leftEClass = node.childEClasses[0]
@@ -49,13 +51,13 @@ fun <ExprType: Expr> EGraph<ExprType>.getMatchResults(matcher: EMatcher, node: E
     }
 }
 
-infix fun List<EMatchResult>.combineWith(otherList: List<EMatchResult>): List<Map<String, EClass>> {
+infix fun List<EMatchResult>.combineWith(otherList: List<EMatchResult>): List<Map<String, Expr>> {
     return flatMap { first -> otherList.map { second -> first to second } }
-        .filter { consistentMatches(it.first.matchedGroups, it.second.matchedGroups) }
-        .map { it.first.matchedGroups + it.second.matchedGroups }
+        .filter { consistentMatches(it.first.matchedExpressions, it.second.matchedExpressions) }
+        .map { it.first.matchedExpressions + it.second.matchedExpressions }
 }
 
-fun consistentMatches(firstMap: Map<String, EClass>, secondMap: Map<String, EClass>): Boolean {
+fun consistentMatches(firstMap: Map<String, Expr>, secondMap: Map<String, Expr>): Boolean {
     return secondMap.all { (matchName, eClass) ->
         eClass == (firstMap[matchName] ?: eClass)
     }

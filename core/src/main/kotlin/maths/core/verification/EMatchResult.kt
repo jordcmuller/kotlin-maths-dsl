@@ -1,5 +1,7 @@
 package maths.core.verification
 
-class EMatchResult(val rootEClass: EClass, val matchedGroups: Map<String, EClass> = emptyMap()) {
-    operator fun get(anyNode: AnyNode) = matchedGroups[anyNode.name] ?: error("matched group ${anyNode.name} not found")
+import maths.core.ast.Expr
+
+class EMatchResult(val rootEClass: EClass, val matchedExpressions: Map<String, Expr> = emptyMap()) {
+    operator fun get(anyNode: AnyNode) = matchedExpressions[anyNode.name] ?: error("matched group ${anyNode.name} not found")
 }
