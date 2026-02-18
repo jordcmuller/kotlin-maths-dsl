@@ -8,9 +8,9 @@ import maths.core.dsl.unaryMinus
 import maths.core.dsl.variable
 import maths.core.rewriting.dsl.provideDelegate
 
-val x by variable()
-val y by variable()
-val z by variable()
+private val x by variable()
+private val y by variable()
+private val z by variable()
 
 val multiplicativeCommutativity by x * y to y * x
 val multiplicativeAssociativity by x * y * z to x * (y * z)
