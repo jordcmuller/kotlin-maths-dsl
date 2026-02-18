@@ -1,8 +1,6 @@
 package maths.core.verification
 
-import maths.core.ast.Expr
-
-fun <ExprType: Expr> EGraph<ExprType>.print(): String = buildString {
+fun EGraph.print(): String = buildString {
     appendLine("EGraph")
     eClasses.forEach {
         appendLine("    EClass ${it.id}")

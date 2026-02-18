@@ -2,12 +2,8 @@ package maths.core.verification
 
 import maths.core.ast.*
 
-interface ExprLowerer<ExprType: Expr> {
-    fun lower(expr: ExprType, add: (ENode) -> EClass): EClass
-}
-
-class MathsLowerer : ExprLowerer<Expr> {
-    override fun lower(expr: Expr, add: (ENode) -> EClass): EClass =
+class ExprLowerer {
+    fun lower(expr: Expr, add: (ENode) -> EClass): EClass =
         when (expr) {
             is Const -> add(EConst(expr.value))
 

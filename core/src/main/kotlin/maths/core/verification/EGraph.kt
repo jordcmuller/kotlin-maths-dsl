@@ -2,20 +2,20 @@ package maths.core.verification
 
 import maths.core.ast.Expr
 
-open class EGraph<ExprType: Expr>(val lowerer: ExprLowerer<ExprType>) {
+open class EGraph {
+    val lowerer = ExprLowerer()
     val unionFind = UnionFind<EClass>()
 
     val eClasses = mutableListOf<EClass>()
     val eNodes = mutableListOf<ENode>()
 
     val eNodeHashCons = mutableMapOf<String, EClass>()
-    val eClassesById = mutableMapOf<EClassId, EClass>()
 
     var latestId = 1
 
     val worklist = mutableSetOf<EClass>()
 
-    fun add(expr: ExprType): EClass {
+    fun add(expr: Expr): EClass {
         return lowerer.lower(expr, ::add)
     }
 
@@ -38,7 +38,6 @@ open class EGraph<ExprType: Expr>(val lowerer: ExprLowerer<ExprType>) {
         eClass.nodes.forEach {
             eNodeHashCons[it.toHashKey] = eClass
         }
-        eClassesById[eClass.id] = eClass
     }
 
     fun findEClass(eClass: EClass) = eClass.canonicalEClass
@@ -80,7 +79,6 @@ open class EGraph<ExprType: Expr>(val lowerer: ExprLowerer<ExprType>) {
                 .filter { it.id != canonicalEClass.id }
                 .forEach { eClass ->
                     eClasses.remove(eClass)
-                    eClassesById.remove(eClass.id)
 
                     canonicalEClass.nodes += eClass.nodes
                 }

@@ -1,8 +1,6 @@
 package maths.core.verification
 
-import maths.core.ast.Expr
-
-fun <ExprType: Expr> EGraph<ExprType>.toMermaid(): String {
+fun EGraph.toMermaid(): String {
     val diagramSections = listOf(
         "graph TD",
         generateEClassSubgraphs(),
@@ -14,7 +12,7 @@ fun <ExprType: Expr> EGraph<ExprType>.toMermaid(): String {
         .joinToString("\n\n")
 }
 
-private fun <ExprType: Expr> EGraph<ExprType>.generateEClassSubgraphs(): String {
+private fun EGraph.generateEClassSubgraphs(): String {
     return eClasses.joinToString("\n\n") { it.toMermaidSubgraph().prependIndent() }
 }
 
@@ -32,7 +30,7 @@ private fun EClass.toMermaidSubgraph() = buildString {
     append("end")
 }
 
-private fun <ExprType: Expr> EGraph<ExprType>.generateAllENodeLinks(): String {
+private fun EGraph.generateAllENodeLinks(): String {
     return eClasses
         .map { it.generateENodeOperandLinks() }
         .filter { it.isNotEmpty() }

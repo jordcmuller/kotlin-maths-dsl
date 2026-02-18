@@ -16,14 +16,14 @@ infix fun EMatcher.childrenCountMatches(size: Int) = when (this) {
     else -> children.size == size
 }
 
-fun <ExprType: Expr> EGraph<ExprType>.eMatch(eMatcher: EMatcher, nodesToSearch: List<ENode> = eNodes): List<EMatchResult> {
+fun EGraph.eMatch(eMatcher: EMatcher, nodesToSearch: List<ENode> = eNodes): List<EMatchResult> {
     return nodesToSearch
         .filter { eMatcher idMatches it.identifier }
         .filter { eMatcher childrenCountMatches it.childEClasses.size }
         .flatMap { getMatchResults(eMatcher, it) }
 }
 
-fun <ExprType: Expr> EGraph<ExprType>.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchResult> {
+fun EGraph.getMatchResults(matcher: EMatcher, node: ENode): List<EMatchResult> {
     val nodeEClass = eNodeHashCons[node.toHashKey] ?: return emptyList()
     val nodeCanonicalForm = nodeEClass.canonicalForm
 
