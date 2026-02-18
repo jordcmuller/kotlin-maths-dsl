@@ -46,5 +46,5 @@ private fun EClass.generateENodeOperandLinks() = buildString {
     }
 }
 
-private fun eNodeId(eClassId: EClassId, index: Int): String =
+private fun eNodeId(eClassId: Int, index: Int): String =
     "E${eClassId}_N$index"

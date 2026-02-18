@@ -1,11 +1,6 @@
 package maths.core.verification
 
-typealias EClassId = Int
-
-class EClass(
-    val id: EClassId,
-    val nodes: MutableList<ENode> = mutableListOf(),
-) {
+class EClass(val id: Int, val nodes: MutableList<ENode> = mutableListOf()) {
     override fun hashCode() = id
 
     override fun equals(other: Any?): Boolean {
