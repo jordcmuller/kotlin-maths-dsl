@@ -4,9 +4,9 @@ import maths.core.ast.*
 
 sealed class ExprPattern : Pattern<Expr> {
     companion object {
-        fun variable(name: String? = null) = VariablePattern(name)
-        fun constant(value: Double? = null) = ConstantPattern(value)
-        fun binary(left: ExprPattern, op: Operation, right: ExprPattern) =
+        private fun variable(name: String? = null) = VariablePattern(name)
+        private fun constant(value: Double? = null) = ConstantPattern(value)
+        private fun binary(left: ExprPattern, op: Operation, right: ExprPattern) =
             BinaryPattern(left, op, right)
 
         fun fromExpr(expr: Expr): ExprPattern = when (expr) {

@@ -8,10 +8,7 @@ import maths.core.verification.saturate
 fun MathsState.processEquation(equation: Equation) {
     statements += equation
 
-    val left = equation.left
-    val right = equation.right
-
-    equation.equivalence = checkEquivalence(left, right)
+    equation.equivalence = checkEquivalence(equation.left, equation.right)
 
     if (equation.equivalence == Equivalence.False) errors.add(ValidationError(equation, "Equation is not true"))
 //    if (equation.equivalence == Equivalence.True) TODO("Update congruence closure")

@@ -1,6 +1,6 @@
 package maths.core.verification
 
-open class ENode(val identifier: String, var childEClasses: List<EClass> = listOf()) {
+sealed class ENode(val identifier: String, var childEClasses: List<EClass> = listOf()) {
     lateinit var parentEClass: EClass
 }
 

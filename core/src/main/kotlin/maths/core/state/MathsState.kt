@@ -1,7 +1,6 @@
 package maths.core.state
 
 import maths.core.ast.Const
-import maths.core.ast.Expr
 import maths.core.ast.Stmt
 import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
@@ -51,10 +50,6 @@ class MathsState {
     // History
     val statements = mutableListOf<Stmt>()
     val errors = mutableListOf<ValidationError>()
-
-    // Fancy stuff
-    val representations = mutableMapOf<String, MutableList<Expr>>()
-
 
 //================================================================================================================
 
