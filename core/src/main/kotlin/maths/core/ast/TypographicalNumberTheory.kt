@@ -57,8 +57,6 @@ open class UnaryExpr(val operation: Operation, val operand: Expr) : Expr {
 
 class Neg(val child: Expr) : UnaryExpr(SUB, child)
 
-class Func(val name: String, val arg: Expr) : Expr
-
 
 interface Stmt
 
