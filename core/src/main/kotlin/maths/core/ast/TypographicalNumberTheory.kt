@@ -7,7 +7,11 @@ enum class Operation(val symbol: String) {
     MUL("*"),
     SUB("-"),
     DIV("/"),
-    POW("^")
+    POW("^");
+
+    companion object {
+        fun fromString(symbol: String) = entries.first { it.symbol == symbol }
+    }
 }
 
 //@JvmInline
