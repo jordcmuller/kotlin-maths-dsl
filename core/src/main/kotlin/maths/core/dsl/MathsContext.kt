@@ -4,12 +4,8 @@ import maths.core.ast.Const
 import maths.core.ast.Equation
 import maths.core.ast.Equivalence
 import maths.core.ast.Expr
-import maths.core.ast.Var
-import maths.core.ast.VariableDeclaration
 import maths.core.state.MathsState
 import maths.core.state.processEquation
-import maths.core.state.processVariableDeclaration
-import kotlin.reflect.KProperty
 
 @DslMarker
 annotation class MathsDsl
@@ -32,6 +28,12 @@ class MathsContext {
         val rightEClass = state.eGraph.add(other)
         state.eGraph.mergeAndRebuild(leftEClass, rightEClass)
     }
+
+    infix fun Number.equate(other: Expr) = this.c equate other
+    infix fun Expr.equate(other: Number) = this equate other.c
+
+    infix fun Number.equal(other: Expr) = this.c equal other
+    infix fun Expr.equal(other: Number) = this equal other.c
 
     operator fun invoke(statementsBlock: MathsContext.() -> Unit) = statementsBlock()
 }
