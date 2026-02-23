@@ -37,3 +37,11 @@ fun Expr.toEMatcher(): EMatcher {
         else -> TODO("EMatcher mapping for $javaClass not supported yet")
     }
 }
+
+fun Expr.toExactEMatcher(): EMatcher = when (this) {
+    is Const -> ConstMatcher(value)
+    is Var -> VarMatcher(name)
+    is UnaryExpr -> UnaryMatcher(operation, operand.toExactEMatcher())
+    is BinaryExpr -> BinaryMatcher(left.toExactEMatcher(), operation, right.toExactEMatcher())
+    else -> TODO("EMatcher mapping for $javaClass not supported yet")
+}
