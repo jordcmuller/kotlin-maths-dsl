@@ -8,6 +8,7 @@ import maths.core.dsl.v
 import maths.core.verification.AnyNode
 import maths.core.verification.MathsEGraph
 import maths.core.verification.eMatch
+import maths.core.verification.extraction.canonicalForm
 
 class EMatchingTests : StringSpec({
     val egg = MathsEGraph()
@@ -25,14 +26,14 @@ class EMatchingTests : StringSpec({
         val result = egg.eMatch(AnyNode("any"))
 
         result.size shouldBe 8
-        result[0].matchedExpressions["any"] shouldBe xEClass
-        result[1].matchedExpressions["any"] shouldBe yEClass
-        result[2].matchedExpressions["any"] shouldBe oneEClass
-        result[3].matchedExpressions["any"] shouldBe twoEClass
-        result[4].matchedExpressions["any"] shouldBe xPlusYEClass
-        result[5].matchedExpressions["any"] shouldBe onePlusTwoEClass
-        result[6].matchedExpressions["any"] shouldBe xPlusTwoEClass
-        result[7].matchedExpressions["any"] shouldBe xPlusYPlusOneEClass
+        result[0].matchedExpressions["any"] shouldBe xEClass.canonicalForm
+        result[1].matchedExpressions["any"] shouldBe yEClass.canonicalForm
+        result[2].matchedExpressions["any"] shouldBe oneEClass.canonicalForm
+        result[3].matchedExpressions["any"] shouldBe twoEClass.canonicalForm
+        result[4].matchedExpressions["any"] shouldBe xPlusYEClass.canonicalForm
+        result[5].matchedExpressions["any"] shouldBe onePlusTwoEClass.canonicalForm
+        result[6].matchedExpressions["any"] shouldBe xPlusTwoEClass.canonicalForm
+        result[7].matchedExpressions["any"] shouldBe xPlusYPlusOneEClass.canonicalForm
     }
 //    "AnyNode should not cause an infinite loop" {
 //         // set up an identity rule like x+0=x

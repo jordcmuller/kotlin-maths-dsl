@@ -5,10 +5,10 @@ import io.kotest.matchers.shouldBe
 import maths.core.ast.BinaryExpr
 import maths.core.dsl.plus
 import maths.core.dsl.variable
+import maths.core.rewriting.PatternCondition
 import maths.core.rewriting.dsl.provideDelegate
 import maths.core.verification.AnyNode
 import maths.core.verification.BinaryMatcher
-import maths.core.verification.EBinary
 import maths.core.verification.EClass
 import maths.core.verification.EMatchResult
 import maths.core.verification.EVar
@@ -21,14 +21,13 @@ class PatternRewriteTests : StringSpec({
         val additiveCommutativity by x + y to y + x
 
         additiveCommutativity.name shouldBe "additiveCommutativity"
-        additiveCommutativity.pattern shouldBe BinaryMatcher(AnyNode("x"), ADD, AnyNode("y"))
+        (additiveCommutativity.query.premises.first() as PatternCondition).pattern shouldBe BinaryMatcher(AnyNode("x"), ADD, AnyNode("y"))
         additiveCommutativity.template shouldBe BinaryMatcher(AnyNode("y"), ADD, AnyNode("x"))
 
         val xEClass = EClass(1).apply { nodes.add(EVar(x.name))}
         val yEClass = EClass(2).apply { nodes.add(EVar(y.name))}
-        val xPlusYEClass = EClass(3).apply { nodes.add(EBinary(xEClass, "+", yEClass))}
 
-        val matchResult = EMatchResult(xPlusYEClass, mapOf("x" to xEClass.canonicalForm, "y" to yEClass.canonicalForm))
+        val matchResult = EMatchResult(mapOf("x" to xEClass.canonicalForm, "y" to yEClass.canonicalForm))
         val rewritten = additiveCommutativity.rewrite(matchResult)
 
         rewritten shouldBe BinaryExpr(yEClass.canonicalForm, ADD, xEClass.canonicalForm)
