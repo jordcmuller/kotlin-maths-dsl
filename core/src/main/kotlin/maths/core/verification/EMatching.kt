@@ -1,11 +1,91 @@
 package maths.core.verification
 
 import maths.core.ast.Expr
+import maths.core.rewriting.AndCondition
+import maths.core.rewriting.EqualsCondition
+import maths.core.rewriting.GraphQuery
+import maths.core.rewriting.NotEqualsCondition
+import maths.core.rewriting.OrCondition
+import maths.core.rewriting.PatternCondition
+import maths.core.rewriting.QueryCondition
+import maths.core.rewriting.eMatcherToExpr
 import maths.core.verification.extraction.canonicalForm
+
+fun EGraph.processQuery(query: GraphQuery):List<EMatchResult> {
+    var results = listOf(EMatchResult())
+
+    for (premise in query.premises) {
+        results = handleCondition(premise, results)
+    }
+
+    return results
+}
+
+private fun EGraph.handleCondition(currentPremise: QueryCondition, currentResults: List<EMatchResult>): List<EMatchResult> {
+    return when (currentPremise) {
+        is PatternCondition -> {
+            currentResults.flatMap { currentResult ->
+                eMatch(currentPremise.pattern.fillInKnownVariables(currentResult))
+                    .map { EMatchResult(currentResult.matchedExpressions + it.matchedExpressions) }
+            }
+        }
+        is EqualsCondition -> {
+            val leftResults = handleCondition(currentPremise.left, currentResults)
+            val rightResults = handleCondition(currentPremise.right, leftResults)
+
+            val equalResults = rightResults.filter { result ->
+                val leftExpr = currentPremise.left.pattern.eMatcherToExpr(result)
+                val leftEClass = add(leftExpr)
+                val rightExpr = currentPremise.right.pattern.eMatcherToExpr(result)
+                val rightEClass = add(rightExpr)
+                leftEClass == rightEClass
+            }
+
+            equalResults
+        }
+        is NotEqualsCondition -> {
+            val leftResults = handleCondition(currentPremise.left, currentResults)
+            val rightResults = handleCondition(currentPremise.right, leftResults)
+
+            val equalResults = rightResults.filter { result ->
+                val leftExpr = currentPremise.left.pattern.eMatcherToExpr(result)
+                val leftEClass = add(leftExpr)
+                val rightExpr = currentPremise.right.pattern.eMatcherToExpr(result)
+                val rightEClass = add(rightExpr)
+                leftEClass != rightEClass
+            }
+
+            equalResults
+        }
+        is AndCondition -> {
+            val firstResults = handleCondition(currentPremise.left, currentResults)
+
+            val secondResults = handleCondition(currentPremise.right, firstResults)
+
+            secondResults
+        }
+        is OrCondition -> {
+            val firstBranchResults = handleCondition(currentPremise.left, currentResults)
+            val secondBranchResults = handleCondition(currentPremise.right, currentResults)
+
+            firstBranchResults + secondBranchResults
+        }
+        else -> TODO()
+    }
+}
+
+fun EMatcher.fillInKnownVariables(result: EMatchResult): EMatcher = when (this) {
+    is AnyNode -> result[this]?.toExactEMatcher() ?: this
+    is ConstMatcher, is VarMatcher -> this
+    is UnaryMatcher -> UnaryMatcher(operation, operand.fillInKnownVariables(result))
+    is BinaryMatcher -> BinaryMatcher(left.fillInKnownVariables(result), operation, right.fillInKnownVariables(result))
+    else -> TODO()
+}
 
 infix fun EMatcher.idMatches(identifier: String) = when (this) {
     is AnyNode -> true
     is ConstMatcher -> value.toString() == identifier
+    is VarMatcher -> name == identifier
     is UnaryMatcher -> operation.symbol == identifier
     is BinaryMatcher -> operation.symbol == identifier
     else -> TODO("idMatches not implemented yet for $this")
