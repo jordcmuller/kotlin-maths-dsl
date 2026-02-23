@@ -5,6 +5,7 @@ import maths.core.ast.Stmt
 import maths.core.ast.Var
 import maths.core.ast.VariableDeclaration
 import maths.core.format.readable
+import maths.core.rewriting.RewriteRule
 import maths.core.rewriting.additiveAssociativity
 import maths.core.rewriting.additiveCommutativity
 import maths.core.rewriting.additiveIdentity
@@ -14,11 +15,12 @@ import maths.core.rewriting.multiplicativeAssociativity
 import maths.core.rewriting.multiplicativeCommutativity
 import maths.core.rewriting.multiplicativeIdentity
 import maths.core.rewriting.multiplicativeInverse
+import maths.core.rewriting.multiplicativeCancellation
 import maths.core.verification.MathsEGraph
 
 class MathsState {
 
-    val rewriteRules = mutableListOf(
+    val rewriteRules = mutableListOf<RewriteRule>(
         additiveCommutativity,
         additiveAssociativity,
         additiveIdentity,
@@ -27,7 +29,8 @@ class MathsState {
         multiplicativeAssociativity,
         multiplicativeIdentity,
         multiplicativeInverse,
-        distributivity
+        distributivity,
+        multiplicativeCancellation
     )
 
     val eGraph = MathsEGraph()
