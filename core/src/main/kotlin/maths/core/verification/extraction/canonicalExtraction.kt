@@ -31,12 +31,17 @@ val EClass.mostShallowENode: ENode get() {
 
 val ENode.depth: Int get() = calculateDepth()
 
+private fun EClass.calculateDepth(currentDepth: Int = 0): Int {
+    return if (currentDepth >= maxDepth) currentDepth
+    else nodes.minOf { it.calculateDepth(currentDepth) }
+}
+
 private fun ENode.calculateDepth(currentDepth: Int = 0): Int = nodeDepth.getOrPut(this) {
     if (currentDepth >= maxDepth) currentDepth
     else when (this) {
         is EConst -> 0
         is EVar -> 1
-        is EUnary, is EBinary -> 1 + childEClasses.sumOf { it.mostShallowENode.calculateDepth(currentDepth + 1) }
+        is EUnary, is EBinary -> 1 + childEClasses.sumOf { it.calculateDepth(currentDepth + 1) }
     }
 }
 
