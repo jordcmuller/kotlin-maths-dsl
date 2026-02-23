@@ -1,16 +1,23 @@
 package maths.core.verification
 
+import maths.core.rewriting.PatternCondition
 import maths.core.rewriting.RewriteRule
+import maths.core.rewriting.eMatcherToExpr
 
 tailrec fun EGraph.saturate(rewriteRules: List<RewriteRule>, maxIterations: Int = 10) {
     if (maxIterations == 0) return
 
     rewriteRules.forEach { rule ->
-        val matches = eMatch(rule.pattern)
+        val matches = processQuery(rule.query)
         matches.forEach { eMatchResult ->
+            // Todo: handle the different ways that the rewrite rules will change the e-graph
+            val original = rule.query.premises.first() as PatternCondition
+            val originalEClass = add(original.pattern.eMatcherToExpr(eMatchResult))
+
             val rewritten = rule.rewrite(eMatchResult) ?: return@forEach
             val rewriteEClass = add(rewritten)
-            merge(eMatchResult.rootEClass, rewriteEClass)
+
+            merge(originalEClass, rewriteEClass)
         }
     }
 
