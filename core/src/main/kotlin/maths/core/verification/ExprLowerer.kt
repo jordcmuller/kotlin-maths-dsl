@@ -20,6 +20,12 @@ class ExprLowerer {
                 add(EUnary(expr.operation.symbol, operand))
             }
 
+            is Func -> {
+                TODO("Scope the function parameters to the function name like f.x, f.y")
+                // Since we are scoping the params, does it not make more sense
+                // to create a new e-graph and have that act as a separate scope?
+            }
+
             else -> error("Unknown expression")
         }
 }
