@@ -60,6 +60,6 @@ fun main() {
 
         x + 1 equal y
 
-        println(state.eGraph.eClasses.map { it.canonicalForm })
+        println(eGraph.eClasses.map { it.canonicalForm })
     }
 }

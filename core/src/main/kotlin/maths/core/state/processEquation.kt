@@ -3,11 +3,11 @@ package maths.core.state
 import maths.core.ast.Equation
 import maths.core.ast.Equivalence
 import maths.core.ast.Expr
-import maths.core.verification.saturate
+import maths.core.dsl.MathsContext
+import maths.core.dsl.ValidationError
+import maths.core.egraph.saturate
 
-fun MathsState.processEquation(equation: Equation) {
-    statements += equation
-
+fun MathsContext.processEquation(equation: Equation) {
     equation.equivalence = checkEquivalence(equation.left, equation.right)
 
     if (equation.equivalence == Equivalence.False) errors.add(ValidationError(equation, "Equation is not true"))
@@ -18,7 +18,7 @@ fun computationallyEquivalent(left: Expr, right: Expr): Boolean {
     return compute(left) == compute(right)
 }
 
-private fun MathsState.checkEquivalence(left: Expr, right: Expr): Equivalence {
+private fun MathsContext.checkEquivalence(left: Expr, right: Expr): Equivalence {
     // TODO: which situations result in unknown equivalence
 
     if (semanticallyEquivalent(left, right)) {
@@ -32,7 +32,7 @@ private fun MathsState.checkEquivalence(left: Expr, right: Expr): Equivalence {
     return Equivalence.False
 }
 
-private fun MathsState.semanticallyEquivalent(a: Expr, b: Expr): Boolean {
+private fun MathsContext.semanticallyEquivalent(a: Expr, b: Expr): Boolean {
     val aEClass = eGraph.add(a)
     val bEClass = eGraph.add(b)
     eGraph.saturate(rewriteRules)
