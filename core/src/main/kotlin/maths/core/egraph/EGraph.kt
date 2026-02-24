@@ -1,4 +1,4 @@
-package maths.core.verification
+package maths.core.egraph
 
 import maths.core.ast.Expr
 

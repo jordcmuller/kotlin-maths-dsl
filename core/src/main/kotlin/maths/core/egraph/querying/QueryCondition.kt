@@ -1,6 +1,6 @@
-package maths.core.rewriting
+package maths.core.egraph.querying
 
-import maths.core.verification.EMatcher
+import maths.core.egraph.EMatcher
 
 interface QueryCondition
 

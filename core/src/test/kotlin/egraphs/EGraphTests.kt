@@ -7,12 +7,12 @@ import io.kotest.matchers.shouldBe
 import maths.core.dsl.c
 import maths.core.dsl.plus
 import maths.core.dsl.v
-import maths.core.verification.EBinary
-import maths.core.verification.EClass
-import maths.core.verification.EConst
-import maths.core.verification.EVar
-import maths.core.verification.MathsEGraph
-import maths.core.verification.toHashKey
+import maths.core.egraph.EBinary
+import maths.core.egraph.EClass
+import maths.core.egraph.EConst
+import maths.core.egraph.EVar
+import maths.core.egraph.MathsEGraph
+import maths.core.egraph.toHashKey
 
 class EGraphTests : StringSpec({
     "An egraph should be empty when created" {

@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import maths.core.dsl.c
 import maths.core.dsl.plus
 import maths.core.dsl.v
-import maths.core.verification.MathsEGraph
-import maths.core.verification.print
+import maths.core.egraph.MathsEGraph
+import maths.core.egraph.print
 
 class EGraphDebuggingOutputTests : StringSpec({
     "A constant in the egraph should show debug output" {

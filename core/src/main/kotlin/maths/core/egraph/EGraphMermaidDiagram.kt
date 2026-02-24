@@ -1,4 +1,4 @@
-package maths.core.verification
+package maths.core.egraph
 
 fun EGraph.toMermaid(): String {
     val diagramSections = listOf(

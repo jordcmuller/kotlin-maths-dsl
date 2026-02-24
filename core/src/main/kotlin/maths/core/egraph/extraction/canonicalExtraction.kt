@@ -1,4 +1,4 @@
-package maths.core.verification.extraction
+package maths.core.egraph.extraction
 
 import maths.core.ast.BinaryExpr
 import maths.core.ast.Const
@@ -8,12 +8,12 @@ import maths.core.ast.UnaryExpr
 import maths.core.ast.Var
 import maths.core.dsl.maths
 import maths.core.dsl.plus
-import maths.core.verification.EBinary
-import maths.core.verification.EClass
-import maths.core.verification.EConst
-import maths.core.verification.ENode
-import maths.core.verification.EUnary
-import maths.core.verification.EVar
+import maths.core.egraph.EBinary
+import maths.core.egraph.EClass
+import maths.core.egraph.EConst
+import maths.core.egraph.ENode
+import maths.core.egraph.EUnary
+import maths.core.egraph.EVar
 
 val nodeDepth = hashMapOf<ENode, Int>()
 const val maxDepth = 10

@@ -1,4 +1,4 @@
-package maths.core.verification
+package maths.core.egraph
 
 sealed class ENode(val identifier: String, var childEClasses: List<EClass> = listOf()) {
     lateinit var parentEClass: EClass

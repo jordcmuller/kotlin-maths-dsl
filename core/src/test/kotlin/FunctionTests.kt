@@ -13,9 +13,9 @@ import maths.core.dsl.plus
 import maths.core.dsl.times
 import maths.core.dsl.v
 import maths.core.dsl.variable
-import maths.core.verification.AnyNode
-import maths.core.verification.MathsEGraph
-import maths.core.verification.eMatch
+import maths.core.egraph.AnyNode
+import maths.core.egraph.MathsEGraph
+import maths.core.egraph.eMatch
 
 class FunctionTests: StringSpec({
     "The identity function can be defined and returns the expression that is passed to it when called" {

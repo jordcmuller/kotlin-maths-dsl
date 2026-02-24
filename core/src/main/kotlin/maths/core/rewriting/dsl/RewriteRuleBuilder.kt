@@ -1,16 +1,13 @@
 package maths.core.rewriting.dsl
 
 import maths.core.ast.Expr
-import maths.core.rewriting.AndCondition
-import maths.core.rewriting.EqualsCondition
-import maths.core.rewriting.GraphQuery
-import maths.core.rewriting.NotEqualsCondition
-import maths.core.rewriting.OrCondition
-import maths.core.rewriting.PatternCondition
-import maths.core.rewriting.QueryCondition
+import maths.core.egraph.querying.ConditionFactory
+import maths.core.egraph.querying.GraphQuery
+import maths.core.egraph.querying.PatternCondition
+import maths.core.egraph.querying.QueryCondition
 import maths.core.rewriting.TemplateRewriteRule
-import maths.core.verification.EMatcher
-import maths.core.verification.toEMatcher
+import maths.core.egraph.EMatcher
+import maths.core.egraph.toEMatcher
 import kotlin.reflect.KProperty
 
 class RewriteRuleBuilder(pattern: EMatcher, val template: EMatcher) {

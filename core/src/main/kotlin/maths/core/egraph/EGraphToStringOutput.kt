@@ -1,4 +1,4 @@
-package maths.core.verification
+package maths.core.egraph
 
 fun EGraph.print(): String = buildString {
     appendLine("EGraph")

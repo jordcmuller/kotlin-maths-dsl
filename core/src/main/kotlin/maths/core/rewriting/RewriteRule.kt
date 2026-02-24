@@ -5,12 +5,12 @@ import maths.core.ast.Const
 import maths.core.ast.Expr
 import maths.core.ast.UnaryExpr
 import maths.core.dsl.maths
-import maths.core.verification.AnyNode
-import maths.core.verification.BinaryMatcher
-import maths.core.verification.ConstMatcher
-import maths.core.verification.EMatchResult
-import maths.core.verification.EMatcher
-import maths.core.verification.UnaryMatcher
+import maths.core.egraph.AnyNode
+import maths.core.egraph.BinaryMatcher
+import maths.core.egraph.ConstMatcher
+import maths.core.egraph.EMatchResult
+import maths.core.egraph.EMatcher
+import maths.core.egraph.UnaryMatcher
 
 fun EMatcher.eMatcherToExpr(matchResult: EMatchResult): Expr {
     return when (this) {

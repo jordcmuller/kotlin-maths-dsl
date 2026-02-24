@@ -5,14 +5,14 @@ import io.kotest.matchers.shouldBe
 import maths.core.ast.BinaryExpr
 import maths.core.dsl.plus
 import maths.core.dsl.variable
-import maths.core.rewriting.PatternCondition
+import maths.core.egraph.querying.PatternCondition
 import maths.core.rewriting.dsl.provideDelegate
-import maths.core.verification.AnyNode
-import maths.core.verification.BinaryMatcher
-import maths.core.verification.EClass
-import maths.core.verification.EMatchResult
-import maths.core.verification.EVar
-import maths.core.verification.extraction.canonicalForm
+import maths.core.egraph.AnyNode
+import maths.core.egraph.BinaryMatcher
+import maths.core.egraph.EClass
+import maths.core.egraph.EMatchResult
+import maths.core.egraph.EVar
+import maths.core.egraph.extraction.canonicalForm
 
 class PatternRewriteTests : StringSpec({
     "A rewrite rule should be simple and map a pattern to a template" {

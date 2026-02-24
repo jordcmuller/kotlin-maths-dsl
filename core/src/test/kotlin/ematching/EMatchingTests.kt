@@ -5,10 +5,10 @@ import io.kotest.matchers.shouldBe
 import maths.core.dsl.c
 import maths.core.dsl.plus
 import maths.core.dsl.v
-import maths.core.verification.AnyNode
-import maths.core.verification.MathsEGraph
-import maths.core.verification.eMatch
-import maths.core.verification.extraction.canonicalForm
+import maths.core.egraph.AnyNode
+import maths.core.egraph.MathsEGraph
+import maths.core.egraph.eMatch
+import maths.core.egraph.extraction.canonicalForm
 
 class EMatchingTests : StringSpec({
     val egg = MathsEGraph()

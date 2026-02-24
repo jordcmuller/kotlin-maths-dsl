@@ -1,4 +1,4 @@
-package maths.core.verification
+package maths.core.egraph
 
 class UnionFind<T> {
     val parents = mutableMapOf<T, T>()

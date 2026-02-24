@@ -3,8 +3,8 @@ package egraphs
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import maths.core.verification.EClass
-import maths.core.verification.UnionFind
+import maths.core.egraph.EClass
+import maths.core.egraph.UnionFind
 
 class UnionFindTests : StringSpec({
     "The UnionFind should be empty when created" {

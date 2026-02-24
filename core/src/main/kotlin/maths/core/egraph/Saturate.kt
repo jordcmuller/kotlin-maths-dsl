@@ -1,6 +1,6 @@
-package maths.core.verification
+package maths.core.egraph
 
-import maths.core.rewriting.PatternCondition
+import maths.core.egraph.querying.PatternCondition
 import maths.core.rewriting.RewriteRule
 import maths.core.rewriting.eMatcherToExpr
 

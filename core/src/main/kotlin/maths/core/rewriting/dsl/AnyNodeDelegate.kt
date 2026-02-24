@@ -1,6 +1,6 @@
 package maths.core.rewriting.dsl
 
-import maths.core.verification.AnyNode
+import maths.core.egraph.AnyNode
 import kotlin.reflect.KProperty
 
 class AnyNodeDelegate {
