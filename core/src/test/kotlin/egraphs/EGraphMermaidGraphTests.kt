@@ -129,7 +129,7 @@ class EGraphMermaidGraphTests : StringSpec({
                 E2_N0 --> EClass1
         """.trimIndent()
 
-        eGraph.mergeAndRebuild(xEClass, yEClass)
+        eGraph.queueMergeAndRebuild(xEClass, yEClass)
 
         eGraph.toMermaid() shouldBe """
             graph TD

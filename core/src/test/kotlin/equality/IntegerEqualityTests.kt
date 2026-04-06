@@ -24,11 +24,10 @@ class IntegerEqualityTests : StringSpec({
             e.equivalence shouldBe Equivalence.False
         }
 
-        context.state.errors.first().toString() shouldBe "'1 = 2' is invalid due to 'Equation is not true'"
-        context.state.definedVars shouldBe emptySet()
-        context.state.statements shouldBe listOf(Equation(
-            Const(1.0),
-            Const(2.0)
+        context.errors.first().toString() shouldBe "'1 = 2' is invalid due to 'Equation is not true'"
+        context.statements shouldBe listOf(Equation(
+            Const(1),
+            Const(2)
         ))
     }
 
@@ -39,11 +38,10 @@ class IntegerEqualityTests : StringSpec({
             e.equivalence shouldBe Equivalence.True
         }
 
-        context.state.errors shouldBe emptyList()
-        context.state.definedVars shouldBe emptySet()
-        context.state.statements shouldBe listOf(Equation(
-            Const(2.0),
-            Const(2.0)
+        context.errors shouldBe emptyList()
+        context.statements shouldBe listOf(Equation(
+            Const(2),
+            Const(2)
         ))
     }
 
@@ -54,11 +52,10 @@ class IntegerEqualityTests : StringSpec({
             e.equivalence shouldBe Equivalence.False
         }
 
-        context.state.errors.first().toString() shouldBe "'2 + 2 = 6' is invalid due to 'Equation is not true'"
-        context.state.definedVars shouldBe emptySet()
-        context.state.statements shouldBe listOf(Equation(
-            Add(Const(2.0), Const(2.0)),
-            Const(6.0)
+        context.errors.first().toString() shouldBe "'2 + 2 = 6' is invalid due to 'Equation is not true'"
+        context.statements shouldBe listOf(Equation(
+            Add(Const(2), Const(2)),
+            Const(6)
         ))
     }
 
@@ -69,11 +66,10 @@ class IntegerEqualityTests : StringSpec({
             e.equivalence shouldBe Equivalence.True
         }
 
-        context.state.errors shouldBe emptyList()
-        context.state.definedVars shouldBe emptySet()
-        context.state.statements shouldBe listOf(Equation(
-            Add(Const(2.0), Const(2.0)),
-            Const(4.0)
+        context.errors shouldBe emptyList()
+        context.statements shouldBe listOf(Equation(
+            Add(Const(2), Const(2)),
+            Const(4)
         ))
     }
 
@@ -84,11 +80,10 @@ class IntegerEqualityTests : StringSpec({
             e.equivalence shouldBe Equivalence.True
         }
 
-        context.state.errors shouldBe emptyList()
-        context.state.definedVars shouldBe emptySet()
-        context.state.statements shouldBe listOf(Equation(
-            Add(Const(2.0), Const(2.0)),
-            Add(Const(2.0), Const(2.0)),
+        context.errors shouldBe emptyList()
+        context.statements shouldBe listOf(Equation(
+            Add(Const(2), Const(2)),
+            Add(Const(2), Const(2)),
         ))
     }
 
@@ -97,8 +92,8 @@ class IntegerEqualityTests : StringSpec({
 //            2.c + 4.c eq 6.c
 //        }
 //
-//        context.state.errors shouldBe emptyList()
-//        context.state.definedVars shouldBe emptySet()
+//        context.errors shouldBe emptyList()
+//        context.definedVars shouldBe emptySet()
 //    }
 //
 //    "2 + 4 = 7 should execute and output error" {
@@ -106,7 +101,7 @@ class IntegerEqualityTests : StringSpec({
 //            2.c + 4.c eq 7.c
 //        }
 //
-//        context.state.errors.size shouldBe 1
-//        context.state.errors[0].message shouldBe "Equality conflicts: 2 + 4 != 7"
+//        context.errors.size shouldBe 1
+//        context.errors[0].message shouldBe "Equality conflicts: 2 + 4 != 7"
 //    }
 })

@@ -15,7 +15,7 @@ enum class Operation(val symbol: String) {
 }
 
 //@JvmInline
-data class Const(val value: Double) : Expr
+data class Const(val value: Int) : Expr
 
 val zero = object: Expr {
     override fun toString() = "0"
@@ -53,7 +53,7 @@ class Mul(left: Expr, right: Expr) : BinaryExpr(left, Operation.MUL, right)
 
 class Div(left: Expr, right: Expr) : BinaryExpr(left, Operation.DIV, right)
 
-class Pow(val base: Expr, val exp: Expr) : BinaryExpr(base, Operation.MUL, exp)
+class Pow(val base: Expr, val exp: Expr) : BinaryExpr(base, Operation.POW, exp)
 
 open class UnaryExpr(val operation: Operation, val operand: Expr) : Expr {
     override fun toString() = "$operand$operation"

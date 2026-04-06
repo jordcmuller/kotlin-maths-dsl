@@ -12,7 +12,6 @@ import maths.core.rewriting.additiveCommutativity
 import maths.core.rewriting.additiveIdentity
 import maths.core.rewriting.additiveInverse
 import maths.core.rewriting.distributivity
-import maths.core.rewriting.dsl.RewriteRuleBuilder
 import maths.core.rewriting.multiplicativeAssociativity
 import maths.core.rewriting.multiplicativeCancellation
 import maths.core.rewriting.multiplicativeCommutativity
@@ -20,6 +19,7 @@ import maths.core.rewriting.multiplicativeIdentity
 import maths.core.rewriting.multiplicativeInverse
 import maths.core.state.processEquation
 import maths.core.egraph.MathsEGraph
+import maths.core.rewriting.squared
 
 @DslMarker
 annotation class MathsDsl
@@ -27,10 +27,10 @@ annotation class MathsDsl
 @MathsDsl
 class MathsContext(noRules: Boolean = false) {
 
+    val rewriteRules = mutableListOf<RewriteRule>()
     init { if (!noRules) withAdditionAndMultiplicationRules() }
 
     val eGraph = MathsEGraph()
-    val rewriteRules = mutableListOf<RewriteRule>()
 
     val statements = mutableListOf<Stmt>()
     val errors = mutableListOf<ValidationError>()
@@ -40,14 +40,14 @@ class MathsContext(noRules: Boolean = false) {
     infix fun Expr.notEqual(other: Expr) = (this eq other).equivalence == Equivalence.False
 
     infix fun Expr.eq(other: Expr): Equation = Equation(this, other).also(::processEquation)
-    infix fun Expr.eq(other: Int) = this eq Const(other.toDouble())
+    infix fun Expr.eq(other: Int) = this eq Const(other)
 
     fun variable(name: String? = null) = VariableDelegate(name).also { eGraph.add(it.variable) }
 
     infix fun Expr.equate(other: Expr) {
         val leftEClass = eGraph.add(this)
         val rightEClass = eGraph.add(other)
-        eGraph.mergeAndRebuild(leftEClass, rightEClass)
+        eGraph.queueMergeAndRebuild(leftEClass, rightEClass)
     }
 
     infix fun Number.equate(other: Expr) = this.c equate other
@@ -57,6 +57,14 @@ class MathsContext(noRules: Boolean = false) {
     infix fun Expr.equal(other: Number) = this equal other.c
 
     operator fun invoke(statementsBlock: MathsContext.() -> Unit) = statementsBlock()
+
+    fun withRule(rewriteRuleFunc: () -> RewriteRule) {
+        rewriteRules += rewriteRuleFunc()
+    }
+
+    companion object {
+        val empty = MathsContext(noRules = true)
+    }
 }
 
 fun maths(statementsBlock: MathsContext.() -> Unit): MathsContext {
@@ -93,6 +101,7 @@ fun MathsContext.withAdditionAndMultiplicationRules() {
     withMultiplicationRules()
     rewriteRules += listOf(
         distributivity,
+        squared,
         multiplicativeCancellation
     )
 }

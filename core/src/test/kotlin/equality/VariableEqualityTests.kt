@@ -21,19 +21,17 @@ class VariableEqualityTests : StringSpec({
             (x eq 2.c).equivalence shouldBe Equivalence.True
         }
 
-        context.state.definedVars shouldBe setOf("x")
-        context.state.statements shouldBe listOf(
+        context.statements shouldBe listOf(
             VariableDeclaration("x"),
             Equation(
                 Var("x"),
-                Const(2.0)
+                Const(2)
             ),
             Equation(
                 Var("x"),
-                Const(2.0)
+                Const(2)
             )
         )
-        context.state.variableValues["x"] shouldBe Const(2.0)
     }
 
     "x defined as an unknown and equated to 2, y is defined as unknown and equated to 3, comparing them should be false" {
@@ -51,24 +49,23 @@ class VariableEqualityTests : StringSpec({
             (y eq x).equivalence shouldBe Equivalence.False
         }
 
-        context.state.definedVars shouldBe setOf("x", "y")
-        context.state.statements shouldBe listOf(
+        context.statements shouldBe listOf(
             VariableDeclaration("x"),
             VariableDeclaration("y"),
             Equation(
                 Var("x"),
-                Const(2.0)
+                Const(2)
             ),
             Equation(
                 Var("x"),
-                Const(2.0)
+                Const(2)
             ),
             Equation(
-                Const(3.0),
+                Const(3),
                 Var("y")
             ),
             Equation(
-                Const(3.0),
+                Const(3),
                 Var("y")
             ),
             Equation(
@@ -80,8 +77,6 @@ class VariableEqualityTests : StringSpec({
                 Var("x")
             )
         )
-        context.state.variableValues["x"] shouldBe Const(2.0)
-        context.state.variableValues["y"] shouldBe Const(3.0)
     }
 
     "define x and it should equal itself" {
@@ -91,8 +86,7 @@ class VariableEqualityTests : StringSpec({
             (x eq x).equivalence shouldBe Equivalence.True
         }
 
-        context.state.definedVars shouldBe setOf("x")
-        context.state.statements shouldBe listOf(
+        context.statements shouldBe listOf(
             VariableDeclaration("x"),
             Equation(
                 Var("x"),

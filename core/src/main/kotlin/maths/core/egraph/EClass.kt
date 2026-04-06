@@ -1,6 +1,10 @@
 package maths.core.egraph
 
+import maths.core.egraph.analysis.AnalysisData
+
 class EClass(val id: Int, val nodes: MutableList<ENode> = mutableListOf()) {
+    var analysisData = AnalysisData()
+
     override fun hashCode() = id
 
     override fun equals(other: Any?): Boolean {

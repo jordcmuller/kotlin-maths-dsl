@@ -18,10 +18,7 @@ import maths.core.ast.VariableDeclaration
 
 // Human-readable math (written form)
 fun Expr.readable(): String = when (this) {
-    is Const -> {
-        val intValue = value.toInt()
-        if (value == intValue.toDouble()) intValue.toString() else value.toString()
-    }
+    is Const -> value.toString()
     is Var -> name
     is Add -> "${left.readable()} + ${right.readable()}"
     is Sub -> "${left.readable()} - ${right.readable()}"

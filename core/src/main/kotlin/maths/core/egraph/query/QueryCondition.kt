@@ -1,4 +1,4 @@
-package maths.core.egraph.querying
+package maths.core.egraph.query
 
 import maths.core.egraph.EMatcher
 

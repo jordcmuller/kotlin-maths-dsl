@@ -1,11 +1,12 @@
 package maths.core.egraph
 
 import maths.core.ast.*
+import maths.core.egraph.analysis.ConstValue
 
 class ExprLowerer {
     fun lower(expr: Expr, add: (ENode) -> EClass): EClass =
         when (expr) {
-            is Const -> add(EConst(expr.value))
+            is Const -> add(EConst(ConstValue.IntVal(expr.value)))
 
             is Var -> add(EVar(expr.name))
 

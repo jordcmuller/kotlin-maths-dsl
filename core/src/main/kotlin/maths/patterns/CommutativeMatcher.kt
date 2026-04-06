@@ -42,7 +42,7 @@ object AssociativeMatcher : RuleMatcher {
 }
 
 object IdentityMatcher : RuleMatcher {
-    val identityElement: Expr = Const(0.0)
+    val identityElement: Expr = Const(0)
 
     override fun matches(pattern: BinaryPattern, value: BinaryExpr): Boolean {
         // if x + 0

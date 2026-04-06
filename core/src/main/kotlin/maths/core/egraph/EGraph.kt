@@ -1,10 +1,13 @@
 package maths.core.egraph
 
 import maths.core.ast.Expr
+import maths.core.egraph.analysis.ConstFoldingAnalysis
+import maths.core.egraph.analysis.ConstValue
 
 open class EGraph {
     val lowerer = ExprLowerer()
     val unionFind = UnionFind<EClass>()
+    val analysis = ConstFoldingAnalysis()
 
     val eClasses = mutableListOf<EClass>()
     val eNodes = mutableListOf<ENode>()
@@ -36,17 +39,16 @@ open class EGraph {
         unionFind.add(eClass)
         eClasses.add(eClass)
         eClass.nodes.forEach {
+            eClass.analysisData = analysis.join(eClass.analysisData, analysis.make(this, it))
             eNodeHashCons[it.toHashKey] = eClass
         }
     }
 
     fun findEClass(eClass: EClass) = eClass.canonicalEClass
 
-    fun findEClass(eNode: ENode): EClass? {
-        return eNodeHashCons[eNode.toHashKey]?.canonicalEClass
-    }
+    fun findEClass(eNode: ENode) = eNodeHashCons[eNode.toHashKey]?.canonicalEClass
 
-    fun merge(a: EClass, b: EClass): Boolean {
+    fun queueMerge(a: EClass, b: EClass): Boolean {
         if (!unionFind.union(a, b)) return false
 
         with(worklist) {
@@ -57,7 +59,7 @@ open class EGraph {
         return true
     }
 
-    fun mergeAndRebuild(a: EClass, b: EClass) = merge(a, b).also { rebuild() }
+    fun queueMergeAndRebuild(a: EClass, b: EClass) = queueMerge(a, b).also { rebuild() }
 
     fun rebuild() {
         while (worklist.isNotEmpty()) {
@@ -73,16 +75,27 @@ open class EGraph {
 
         val eClassGroups = eClassesToProcess
             .groupBy { it.canonicalEClass }
+            .mapValues { (canonicalEClass, eClassesPendingMerge) ->
+                eClassesPendingMerge.filter { it.id != canonicalEClass.id }
+            }
 
         eClassGroups.forEach { (canonicalEClass, eClassesPendingMerge) ->
-            eClassesPendingMerge
-                .filter { it.id != canonicalEClass.id }
-                .forEach { eClass ->
-                    eClasses.remove(eClass)
-
-                    canonicalEClass.nodes += eClass.nodes
-                }
+            eClassesPendingMerge.forEach {
+                actualMergeLogic(canonicalEClass, it)
+            }
         }
+    }
+
+    private fun actualMergeLogic(canonicalEClass: EClass, eClass: EClass) {
+        val newAnalysisData = analysis.join(canonicalEClass.analysisData, eClass.analysisData)
+
+        if (newAnalysisData.constValue == ConstValue.Conflict) TODO("should we handle conflicts here?")
+
+        eClasses.remove(eClass)
+
+        canonicalEClass.analysisData = newAnalysisData
+        analysis.modify(this, canonicalEClass)
+        canonicalEClass.nodes += eClass.nodes
     }
 
     private fun canonicalizeAllNodes() {
@@ -105,18 +118,18 @@ open class EGraph {
     }
 
     private fun propagateCongruence() {
-        val congruentNodeGroups = eNodes.groupBy { it.toHashKey }.map { it.value }
+        val congruentNodeGroups = eNodes.groupBy { it.toHashKey }.values
         congruentNodeGroups.forEach { congruentNodes -> mergeAllNodes(congruentNodes) }
     }
 
     private fun mergeAllNodes(congruentNodes: List<ENode>) {
-        congruentNodes.reduce { a, b -> a merge b }
+        congruentNodes.reduce { a, b -> a queueMerge b }
     }
 
     override fun toString() = print()
 
     private val EClass.canonicalEClass: EClass get() = unionFind.find(this)
-    private infix fun ENode.merge(other: ENode) = also { merge(this.parentEClass, other.parentEClass) }
+    private infix fun ENode.queueMerge(other: ENode) = also { queueMerge(this.parentEClass, other.parentEClass) }
 }
 
 val ENode.toHashKey get() = buildString {

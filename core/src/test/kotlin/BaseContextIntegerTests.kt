@@ -10,9 +10,8 @@ class BaseContextIntegerTests : StringSpec({
             2.c
         }
 
-        context.state.errors shouldBe emptyList()
-        context.state.definedVars shouldBe emptySet()
-        context.state.statements shouldBe emptyList()
+        context.errors shouldBe emptyList()
+        context.statements shouldBe emptyList()
     }
 
 
@@ -21,7 +20,6 @@ class BaseContextIntegerTests : StringSpec({
             2.c + 4.c
         }
 
-        context.state.errors shouldBe emptyList()
-        context.state.definedVars shouldBe emptySet()
+        context.errors shouldBe emptyList()
     }
 })

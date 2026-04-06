@@ -2,6 +2,7 @@ package egraphs
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import maths.core.dsl.c
@@ -12,6 +13,7 @@ import maths.core.egraph.EClass
 import maths.core.egraph.EConst
 import maths.core.egraph.EVar
 import maths.core.egraph.MathsEGraph
+import maths.core.egraph.analysis.ConstValue
 import maths.core.egraph.toHashKey
 
 class EGraphTests : StringSpec({
@@ -28,14 +30,14 @@ class EGraphTests : StringSpec({
         with(MathsEGraph()) {
             add(1.c)
 
-            val expectedENode = EConst(1.0)
-            val expectedEClass = EClass(0, mutableListOf(expectedENode))
+            val expectedENode = EConst(ConstValue.IntVal(1))
+            val expectedEClass = EClass(1, mutableListOf(expectedENode))
 
-            eClasses shouldBe mutableListOf(expectedEClass)
-            eNodes shouldBe mutableListOf(expectedENode)
+            eClasses shouldBeEqual mutableListOf(expectedEClass)
+            eNodes shouldBeEqual mutableListOf(expectedENode)
             eNodeHashCons shouldHaveSize 1
-            eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass.id)
-            latestId shouldBe 1
+            eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass)
+            latestId shouldBe 2
             worklist shouldBe emptyList()
         }
     }
@@ -44,13 +46,13 @@ class EGraphTests : StringSpec({
             add("x".v)
 
             val expectedENode = EVar("x")
-            val expectedEClass = EClass(0, mutableListOf(expectedENode))
+            val expectedEClass = EClass(1, mutableListOf(expectedENode))
 
             eClasses shouldBe mutableListOf(expectedEClass)
             eNodes shouldBe mutableListOf(expectedENode)
             eNodeHashCons shouldHaveSize 1
             eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass.id)
-            latestId shouldBe 1
+            latestId shouldBe 2
             worklist shouldBe emptyList()
         }
     }
@@ -59,13 +61,13 @@ class EGraphTests : StringSpec({
             add("x".v + 1.c)
 
             val expectedLeftENode = EVar("x")
-            val expectedLeftEClass = EClass(0, mutableListOf(expectedLeftENode))
+            val expectedLeftEClass = EClass(1, mutableListOf(expectedLeftENode))
 
-            val expectedRightENode = EConst(1.0)
-            val expectedRightEClass = EClass(1, mutableListOf(expectedRightENode))
+            val expectedRightENode = EConst(ConstValue.IntVal(1))
+            val expectedRightEClass = EClass(2, mutableListOf(expectedRightENode))
 
             val expectedOperationENode = EBinary(expectedLeftEClass,"+", expectedRightEClass)
-            val expectedOperationEClass = EClass(2, mutableListOf(expectedOperationENode))
+            val expectedOperationEClass = EClass(3, mutableListOf(expectedOperationENode))
 
             eClasses shouldHaveSize 3
             eClasses shouldBe mutableListOf(expectedLeftEClass, expectedRightEClass, expectedOperationEClass)
@@ -77,7 +79,7 @@ class EGraphTests : StringSpec({
                 expectedRightENode.toHashKey to expectedRightEClass.id,
                 expectedOperationENode.toHashKey to expectedOperationEClass.id,
             )
-            latestId shouldBe 3
+            latestId shouldBe 4
             worklist shouldBe emptyList()
         }
     }

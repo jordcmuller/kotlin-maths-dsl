@@ -14,8 +14,8 @@ class Identity(identityElement: Expr) : AlgebraicRule { override val name = "Ass
 // Future: object Distributive : AlgebraicRule { override val name = "Distributive" }
 
 val propertyMap = mapOf(
-    Operation.ADD to setOf(Commutative, Associative, Identity(Const(0.0))),
-    Operation.MUL to setOf(Commutative, Associative, Identity(Const(1.0))),
-    Operation.SUB to setOf(Associative, Identity(Const(0.0))),
-    Operation.DIV to setOf(Associative, Identity(Const(1.0))),
+    Operation.ADD to setOf(Commutative, Associative, Identity(Const(0))),
+    Operation.MUL to setOf(Commutative, Associative, Identity(Const(1))),
+    Operation.SUB to setOf(Associative, Identity(Const(0))),
+    Operation.DIV to setOf(Associative, Identity(Const(1))),
 )

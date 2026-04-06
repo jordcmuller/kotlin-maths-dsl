@@ -4,8 +4,8 @@ import maths.core.ast.*
 
 sealed class ExprPattern : Pattern<Expr> {
     companion object {
-        private fun variable(name: String? = null) = VariablePattern(name)
-        private fun constant(value: Double? = null) = ConstantPattern(value)
+        private fun variable(name: String) = VariablePattern(name)
+        private fun constant(value: Int) = ConstantPattern(value)
         private fun binary(left: ExprPattern, op: Operation, right: ExprPattern) =
             BinaryPattern(left, op, right)
 
@@ -30,14 +30,14 @@ class SuccessorPattern(private val of: ExprPattern) : ExprPattern() {
     override fun accepts(value: Expr): Boolean = value is Successor && of.accepts(value.of)
 }
 
-class VariablePattern(private val name: String?) : ExprPattern() {
+class VariablePattern(private val name: String) : ExprPattern() {
     override fun accepts(value: Expr): Boolean =
-        value is Var && (name == null || value.name == name)
+        value is Var && value.name == name
 }
 
-class ConstantPattern(private val value: Double?) : ExprPattern() {
+class ConstantPattern(private val value: Int) : ExprPattern() {
     override fun accepts(value: Expr): Boolean =
-        value is Const && (this.value == null || value.value == this.value)
+        value is Const && value.value == this.value
 }
 
 class BinaryPattern(

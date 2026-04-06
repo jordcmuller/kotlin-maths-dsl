@@ -4,10 +4,7 @@ import maths.core.ast.*
 
 // kotlin syntax output
 fun Expr.printKotlin(): String = when (this) {
-    is Const -> {
-        val intValue = value.toInt()
-        if (value == intValue.toDouble()) intValue.toString() else value.toString()
-    }
+    is Const -> value.toString()
     is Var -> name
     is Add -> "${left.printKotlin()} + ${right.printKotlin()}"
     is Mul -> "${left.printKotlin()} * ${right.printKotlin()}"

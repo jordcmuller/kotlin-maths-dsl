@@ -1,15 +1,5 @@
 package maths.core.ast
 
-import maths.core.dsl.div
-import maths.core.dsl.function
-import maths.core.dsl.invoke
-import maths.core.dsl.lim
-import maths.core.dsl.minus
-import maths.core.dsl.plus
-import maths.core.dsl.rangeTo
-import maths.core.dsl.variable
-import maths.core.verification.MathsEGraph
-
 class Func(val name: String, val params: List<Var>, val functionBody: Expr) : Expr {
     override fun toString(): String {
         return "$name(${params.joinToString(", ")}) = $functionBody"

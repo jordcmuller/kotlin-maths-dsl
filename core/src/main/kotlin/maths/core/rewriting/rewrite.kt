@@ -32,7 +32,7 @@ infix fun Expr.rewrite(equation: Equation): Expr {
 context(mathsContext: MathsContext)
 fun rewrite(initial: Expr, subExpression: Expr, replacement: Expr): Expr {
     Equation(subExpression, replacement).also {
-        mathsContext.state.processEquation(it)
+        mathsContext.processEquation(it)
         if (it.equivalence == False) error("Invalid expression rewrite in the context")
     }
     return ExpressionRewritingVisitor(subExpression, replacement).rewrite(initial)

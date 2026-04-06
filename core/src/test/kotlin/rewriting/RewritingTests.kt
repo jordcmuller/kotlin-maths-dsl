@@ -75,7 +75,9 @@ class RewritingTests : StringSpec({
 
                 x + 1                       with 1 * (x + 1)
 
-                x.squared + x               with x * (x + 1)
+                x.squared + x               with x * x + x
+
+                x * x + x                   with x * (x + 1)
 
                 x * (x + 1) + 1 * (x + 1)   with (x + 1) * (x + 1)
 

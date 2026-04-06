@@ -4,11 +4,11 @@ import maths.core.dsl.c
 import maths.core.dsl.div
 import maths.core.dsl.minus
 import maths.core.dsl.plus
+import maths.core.dsl.squared
 import maths.core.dsl.times
 import maths.core.dsl.unaryMinus
 import maths.core.dsl.variable
 import maths.core.rewriting.dsl.provideDelegate
-import maths.core.rewriting.dsl.rewriteRule
 import maths.core.rewriting.dsl.where
 
 private val x by variable()
@@ -24,6 +24,8 @@ val additiveCommutativity by x + y to y + x
 val additiveAssociativity by x + y + z to x + (y + z)
 val additiveIdentity by x + 0 to x
 val additiveInverse by x - y to x + (-y)
+
+val squared by x * x to x.squared
 
 val distributivity by x * (y + z) to x * y + x * z
 
@@ -57,4 +59,4 @@ val distributivity by x * (y + z) to x * y + x * z
 * */
 
 // TODO: this rule breaks the a * b * c equivalence test and somehow puts b and a*b in the same eclass...
-val multiplicativeCancellation by rewriteRule { x to y } where { z notEqual 0.c and (z * x equal z * y) }
+val multiplicativeCancellation by x to y where { z notEqual 0.c and (z * x equal z * y) }

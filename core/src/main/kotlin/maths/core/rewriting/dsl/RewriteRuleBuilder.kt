@@ -1,36 +1,69 @@
 package maths.core.rewriting.dsl
 
 import maths.core.ast.Expr
-import maths.core.egraph.querying.ConditionFactory
-import maths.core.egraph.querying.GraphQuery
-import maths.core.egraph.querying.PatternCondition
-import maths.core.egraph.querying.QueryCondition
-import maths.core.rewriting.TemplateRewriteRule
-import maths.core.egraph.EMatcher
-import maths.core.egraph.toEMatcher
+import maths.core.egraph.action.actions
+import maths.core.egraph.query.ConditionFactory
+import maths.core.egraph.query.QueryCondition
+import maths.core.egraph.query.query
+import maths.core.rewriting.RewriteRule
 import kotlin.reflect.KProperty
 
-class RewriteRuleBuilder(pattern: EMatcher, val template: EMatcher) {
-    val premises: MutableList<QueryCondition> = mutableListOf(PatternCondition(pattern))
+class RewriteRuleBuilder {
+    var name = ""
+    lateinit var from: Expr
+    lateinit var to: Expr
+    lateinit var conditionBlock: ConditionFactory.() -> QueryCondition
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>) = TemplateRewriteRule(property.name, GraphQuery(premises), template)
+    fun build(): RewriteRule {
+        val query = query {
+            match { from }
+            if (::conditionBlock.isInitialized) {
+                where(conditionBlock)
+            }
+        }
+
+        val actions = actions {
+            from equate to
+        }
+
+        return RewriteRule(name, query, actions)
+    }
 }
 
-operator fun Pair<Expr, Expr>.provideDelegate(thisRef: Any?, property: KProperty<*>) =
-    RewriteRuleBuilder(first.toEMatcher(), second.toEMatcher())
-
-fun rewriteRule(ruleBlock: () -> Pair<Expr, Expr>) = ruleBlock().let {
-    RewriteRuleBuilder(it.first.toEMatcher(), it.second.toEMatcher())
+class RewriteRuleDelegate(val builder: RewriteRuleBuilder) {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): RewriteRule {
+        return builder.apply { name = property.name }.build()
+    }
 }
 
-infix fun RewriteRuleBuilder.where(conditionBlock: ConditionFactory.() -> QueryCondition) = apply {
-    premises.add(ConditionFactory.conditionBlock())
+operator fun Pair<Expr, Expr>.provideDelegate(thisRef: Any?, property: KProperty<*>): RewriteRuleDelegate {
+    val rewriteRuleBuilder = RewriteRuleBuilder().apply {
+        from = first
+        to = second
+    }
+    return RewriteRuleDelegate(rewriteRuleBuilder)
 }
 
-object ConditionFactory {
-    infix fun Expr.equal(other: Expr) = EqualsCondition(PatternCondition(this.toEMatcher()), PatternCondition(other.toEMatcher()))
-    infix fun Expr.notEqual(other: Expr) = NotEqualsCondition(PatternCondition(this.toEMatcher()), PatternCondition(other.toEMatcher()))
-    infix fun QueryCondition.and(other: QueryCondition) = AndCondition(this, other)
-    infix fun QueryCondition.or(other: QueryCondition) = OrCondition(this, other)
-//    operator fun QueryCondition.not() = NotCondition(this)
+infix fun Pair<Expr, Expr>.where(conditionBlock: ConditionFactory.() -> QueryCondition): RewriteRuleDelegate {
+    val rewriteRuleBuilder = RewriteRuleBuilder().apply {
+        from = first
+        to = second
+        this.conditionBlock = conditionBlock
+    }
+
+    return RewriteRuleDelegate(rewriteRuleBuilder)
 }
+
+fun rewriteRule(name: String = "", ruleBlock: () -> Pair<Expr, Expr>): RewriteRule {
+    val pair = ruleBlock()
+
+    val rewriteRuleBuilder = RewriteRuleBuilder().apply {
+        this.name = name
+        from = pair.first
+        to = pair.second
+    }
+
+    return rewriteRuleBuilder.build()
+}
+
+operator fun String.invoke(ruleBlock: () -> Pair<Expr, Expr>) = rewriteRule(this, ruleBlock)
