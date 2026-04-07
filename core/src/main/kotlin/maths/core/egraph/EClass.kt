@@ -17,6 +17,6 @@ class EClass(val id: Int, val nodes: MutableList<ENode> = mutableListOf()) {
     }
 
     override fun toString(): String {
-        return "First Node: ${nodes.first()}"
+        return "${nodes.first()}"
     }
 }
