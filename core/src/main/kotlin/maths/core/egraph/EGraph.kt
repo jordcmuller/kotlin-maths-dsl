@@ -81,12 +81,12 @@ open class EGraph {
 
         eClassGroups.forEach { (canonicalEClass, eClassesPendingMerge) ->
             eClassesPendingMerge.forEach {
-                actualMergeLogic(canonicalEClass, it)
+                handleMerge(canonicalEClass, it)
             }
         }
     }
 
-    private fun actualMergeLogic(canonicalEClass: EClass, eClass: EClass) {
+    private fun handleMerge(canonicalEClass: EClass, eClass: EClass) {
         val newAnalysisData = analysis.join(canonicalEClass.analysisData, eClass.analysisData)
 
         if (newAnalysisData.constValue == ConstValue.Conflict) TODO("should we handle conflicts here?")
