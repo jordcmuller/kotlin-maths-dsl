@@ -3,11 +3,15 @@ package maths.core.egraph
 import maths.core.ast.Expr
 import maths.core.egraph.analysis.ConstFoldingAnalysis
 import maths.core.egraph.analysis.ConstValue
+import maths.core.egraph.observability.EGraphObserver
+import maths.core.egraph.observability.IterationTracker
 
 open class EGraph {
     val lowerer = ExprLowerer()
     val unionFind = UnionFind<EClass>()
     val analysis = ConstFoldingAnalysis()
+
+    val observers: List<EGraphObserver> = mutableListOf(IterationTracker())
 
     val eClasses = mutableListOf<EClass>()
     val eNodes = mutableListOf<ENode>()
@@ -89,7 +93,12 @@ open class EGraph {
     private fun actualMergeLogic(canonicalEClass: EClass, eClass: EClass) {
         val newAnalysisData = analysis.join(canonicalEClass.analysisData, eClass.analysisData)
 
-        if (newAnalysisData.constValue == ConstValue.Conflict) TODO("should we handle conflicts here?")
+        if (newAnalysisData.constValue == ConstValue.Conflict) {
+            observers.forEach { it.onMergeConflict(canonicalEClass, eClass, newAnalysisData) }
+            TODO("should we handle conflicts here?")
+        }
+
+        observers.forEach { it.onMerge() }
 
         eClasses.remove(eClass)
 
