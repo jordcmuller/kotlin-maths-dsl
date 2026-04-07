@@ -42,7 +42,7 @@ class MathsContext(noRules: Boolean = false) {
     infix fun Expr.eq(other: Expr): Equation = Equation(this, other).also(::processEquation)
     infix fun Expr.eq(other: Int) = this eq Const(other)
 
-    fun variable(name: String? = null) = VariableDelegate(name).also { eGraph.add(it.variable) }
+    fun variable(name: String? = null) = VariableDelegate(name)
 
     infix fun Expr.equate(other: Expr) {
         val leftEClass = eGraph.add(this)
