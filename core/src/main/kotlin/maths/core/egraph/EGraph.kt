@@ -1,13 +1,13 @@
 package maths.core.egraph
 
 import maths.core.ast.Expr
-import maths.core.egraph.analysis.ConstFoldingAnalysis
-import maths.core.egraph.analysis.ConstValue
+import maths.core.egraph.analysis.AnyAnalysisData
+import maths.core.egraph.analysis.OperatorRegistry
 
 open class EGraph {
     val lowerer = ExprLowerer()
     val unionFind = UnionFind<EClass>()
-    val analysis = ConstFoldingAnalysis()
+    lateinit var analysis: OperatorRegistry
 
     val eClasses = mutableListOf<EClass>()
     val eNodes = mutableListOf<ENode>()
@@ -38,6 +38,7 @@ open class EGraph {
     private fun processEClass(eClass: EClass) {
         unionFind.add(eClass)
         eClasses.add(eClass)
+        eClass.analysisData = AnyAnalysisData()
         eClass.nodes.forEach {
             eClass.analysisData = analysis.join(eClass.analysisData, analysis.make(this, it))
             eNodeHashCons[it.toHashKey] = eClass
@@ -89,8 +90,6 @@ open class EGraph {
     private fun handleMerge(canonicalEClass: EClass, eClass: EClass) {
         val newAnalysisData = analysis.join(canonicalEClass.analysisData, eClass.analysisData)
 
-        if (newAnalysisData.constValue == ConstValue.Conflict) TODO("should we handle conflicts here?")
-
         eClasses.remove(eClass)
 
         canonicalEClass.analysisData = newAnalysisData
@@ -99,12 +98,17 @@ open class EGraph {
     }
 
     private fun canonicalizeAllNodes() {
-        eNodes.forEach { eNode ->
+        eNodes.map { it }.forEach { eNode ->
             val oldHashCons = eNode.toHashKey
             val oldParent = eNode.parentEClass
 
             eNode.parentEClass = eNode.parentEClass.canonicalEClass
             eNode.childEClasses = eNode.childEClasses.map { it.canonicalEClass }
+
+            val newENodeAnalysisData = analysis.make(this, eNode) // todo: improve this computational efficiency
+            val jointAnalysisData = analysis.join(newENodeAnalysisData, eNode.parentEClass.analysisData)
+            eNode.parentEClass.analysisData = jointAnalysisData
+            analysis.modify(this, eNode.parentEClass)
 
             val newHashCons = eNode.toHashKey
             val newParent = eNode.parentEClass

@@ -13,7 +13,6 @@ import maths.core.egraph.EClass
 import maths.core.egraph.EConst
 import maths.core.egraph.EVar
 import maths.core.egraph.MathsEGraph
-import maths.core.egraph.analysis.ConstValue
 import maths.core.egraph.toHashKey
 
 class EGraphTests : StringSpec({
@@ -30,7 +29,7 @@ class EGraphTests : StringSpec({
         with(MathsEGraph()) {
             add(1.c)
 
-            val expectedENode = EConst(ConstValue.IntVal(1))
+            val expectedENode = EConst(1)
             val expectedEClass = EClass(1, mutableListOf(expectedENode))
 
             eClasses shouldBeEqual mutableListOf(expectedEClass)
@@ -63,7 +62,7 @@ class EGraphTests : StringSpec({
             val expectedLeftENode = EVar("x")
             val expectedLeftEClass = EClass(1, mutableListOf(expectedLeftENode))
 
-            val expectedRightENode = EConst(ConstValue.IntVal(1))
+            val expectedRightENode = EConst(1)
             val expectedRightEClass = EClass(2, mutableListOf(expectedRightENode))
 
             val expectedOperationENode = EBinary(expectedLeftEClass,"+", expectedRightEClass)

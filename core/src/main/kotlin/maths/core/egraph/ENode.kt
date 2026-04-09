@@ -1,7 +1,5 @@
 package maths.core.egraph
 
-import maths.core.egraph.analysis.ConstValue
-
 sealed class ENode(val identifier: String, var childEClasses: List<EClass> = listOf()) {
     lateinit var parentEClass: EClass
 }
@@ -22,7 +20,7 @@ data class EBinary(val left: EClass, val operation: String, val right: EClass) :
     }
 }
 
-data class EConst(val value: ConstValue) : ENode(value.toString()) {
+data class EConst(val value: Int) : ENode(value.toString()) {
     override fun toString(): String {
         return "$value"
     }

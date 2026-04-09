@@ -1,9 +1,9 @@
 package maths.core.egraph
 
-import maths.core.egraph.analysis.AnalysisData
+import maths.core.egraph.analysis.AnyAnalysisData
 
 class EClass(val id: Int, val nodes: MutableList<ENode> = mutableListOf()) {
-    var analysisData = AnalysisData()
+    var analysisData = AnyAnalysisData()
 
     override fun hashCode() = id
 

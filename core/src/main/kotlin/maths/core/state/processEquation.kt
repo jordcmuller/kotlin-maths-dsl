@@ -35,8 +35,10 @@ private fun MathsContext.checkEquivalence(left: Expr, right: Expr): Equivalence 
 private fun MathsContext.semanticallyEquivalent(a: Expr, b: Expr): Boolean {
     val aEClass = eGraph.add(a)
     val bEClass = eGraph.add(b)
-    eGraph.saturate(rewriteRules)
 
+    if (aEClass == bEClass) return true
+
+    eGraph.saturate(rewriteRules)
     return eGraph.findEClass(aEClass) == eGraph.findEClass(bEClass)
 }
 

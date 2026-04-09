@@ -19,6 +19,8 @@ import maths.core.rewriting.multiplicativeIdentity
 import maths.core.rewriting.multiplicativeInverse
 import maths.core.state.processEquation
 import maths.core.egraph.MathsEGraph
+import maths.core.egraph.analysis.OperationRegistry
+import maths.core.egraph.analysis.OperatorRegistry
 import maths.core.rewriting.squared
 
 @DslMarker
@@ -30,7 +32,10 @@ class MathsContext(noRules: Boolean = false) {
     val rewriteRules = mutableListOf<RewriteRule>()
     init { if (!noRules) withAdditionAndMultiplicationRules() }
 
+    val operatorRegistry = OperatorRegistry()
     val eGraph = MathsEGraph()
+
+    init { eGraph.analysis = operatorRegistry }
 
     val statements = mutableListOf<Stmt>()
     val errors = mutableListOf<ValidationError>()
@@ -60,6 +65,11 @@ class MathsContext(noRules: Boolean = false) {
 
     fun withRule(rewriteRuleFunc: () -> RewriteRule) {
         rewriteRules += rewriteRuleFunc()
+    }
+
+    inline fun <reified T1: Any, reified T2: Any> withOperation(symbol: String, noinline func: (T1, T2) -> Any) {
+        val operator = operatorRegistry.map.getOrPut(symbol) { OperationRegistry(symbol) }
+        operator.register(func)
     }
 
     companion object {
