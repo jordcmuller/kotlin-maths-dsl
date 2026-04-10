@@ -75,8 +75,8 @@ class OperatorRegistry: Analysis {
 
             is EBinary -> {
                 val operations = map[eNode.operation]
-                val left = eGraph.findEClass(eNode.left).analysisData.value ?: return AnyAnalysisData()
-                val right = eGraph.findEClass(eNode.right).analysisData.value ?: return AnyAnalysisData()
+                val left = eGraph.findCanonicalEClass(eNode.left).analysisData.value ?: return AnyAnalysisData()
+                val right = eGraph.findCanonicalEClass(eNode.right).analysisData.value ?: return AnyAnalysisData()
 
                 val operation = operations?.get(left, right) ?: return AnyAnalysisData()
 
@@ -97,7 +97,7 @@ class OperatorRegistry: Analysis {
     }
 
     override fun modify(eGraph: EGraph, eClass: EClass) {
-        val canonicalEClass = eGraph.findEClass(eClass)
+        val canonicalEClass = eGraph.findCanonicalEClass(eClass)
         val value = canonicalEClass.analysisData.value ?: return
 
         val constEClass = eGraph.add(Const(value))

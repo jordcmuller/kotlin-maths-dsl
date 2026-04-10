@@ -17,10 +17,10 @@ import maths.core.rewriting.multiplicativeCancellation
 import maths.core.rewriting.multiplicativeCommutativity
 import maths.core.rewriting.multiplicativeIdentity
 import maths.core.rewriting.multiplicativeInverse
-import maths.core.state.processEquation
 import maths.core.egraph.MathsEGraph
 import maths.core.egraph.analysis.OperationRegistry
 import maths.core.egraph.analysis.OperatorRegistry
+import maths.core.egraph.saturate
 import maths.core.rewriting.squared
 
 @DslMarker
@@ -74,6 +74,32 @@ class MathsContext(noRules: Boolean = false) {
 
     companion object {
         val empty = MathsContext(noRules = true)
+    }
+
+    fun processEquation(equation: Equation) {
+        val equivalence = checkEquivalence(equation.left, equation.right)
+        if (equivalence == Equivalence.False) errors.add(ValidationError(equation, "Equation is not true"))
+
+        equation.equivalence = equivalence
+    }
+
+    private fun checkEquivalence(left: Expr, right: Expr): Equivalence {
+        if (semanticallyEquivalent(left, right)) {
+            return Equivalence.True
+        }
+
+        return Equivalence.False
+    }
+
+    private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
+        val aEClass = eGraph.add(a)
+        val bEClass = eGraph.add(b)
+
+        if (aEClass == bEClass) return true
+
+        eGraph.saturate(rewriteRules)
+
+        return eGraph.findCanonicalEClass(aEClass) == eGraph.findCanonicalEClass(bEClass)
     }
 }
 

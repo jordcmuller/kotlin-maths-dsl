@@ -44,7 +44,7 @@ open class EGraph {
         }
     }
 
-    fun findEClass(eClass: EClass) = eClass.canonicalEClass
+    fun findCanonicalEClass(eClass: EClass) = eClass.canonicalEClass
 
     fun findEClass(eNode: ENode) = eNodeHashCons[eNode.toHashKey]?.canonicalEClass
 

@@ -20,7 +20,7 @@ sealed class EMatcher(val children: List<EMatcher> = emptyList()) {
 }
 
 data class AnyNode(val name: String): EMatcher()
-data class ConstMatcher(val value: Int) : EMatcher()
+data class ConstMatcher(val value: Any) : EMatcher()
 data class VarMatcher(val name: String) : EMatcher()
 data class BinaryMatcher(val left: EMatcher, val operation: Operation, val right: EMatcher) : EMatcher(listOf(left, right))
 data class UnaryMatcher(val operation: Operation, val operand: EMatcher) : EMatcher(listOf(operand))
