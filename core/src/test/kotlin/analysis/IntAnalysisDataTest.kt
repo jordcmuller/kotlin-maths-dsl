@@ -31,7 +31,7 @@ class IntAnalysisDataTest: StringSpec({
             x + y equal 4 shouldBe true
             x + y equal 5 shouldBe false
 
-            1.c + 2.c + y equal x + x + x + x + x + x
+            1.c + 2.c + y equal x + x + x + x + x + x shouldBe true
         }
     }
 })
