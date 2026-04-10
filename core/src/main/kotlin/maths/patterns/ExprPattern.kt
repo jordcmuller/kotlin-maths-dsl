@@ -5,7 +5,7 @@ import maths.core.ast.*
 sealed class ExprPattern : Pattern<Expr> {
     companion object {
         private fun variable(name: String) = VariablePattern(name)
-        private fun constant(value: Int) = ConstantPattern(value)
+        private fun constant(value: Any) = ConstantPattern(value)
         private fun binary(left: ExprPattern, op: Operation, right: ExprPattern) =
             BinaryPattern(left, op, right)
 
@@ -35,7 +35,7 @@ class VariablePattern(private val name: String) : ExprPattern() {
         value is Var && value.name == name
 }
 
-class ConstantPattern(private val value: Int) : ExprPattern() {
+class ConstantPattern(private val value: Any) : ExprPattern() {
     override fun accepts(value: Expr): Boolean =
         value is Const && value.value == this.value
 }
