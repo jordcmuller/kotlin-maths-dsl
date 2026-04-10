@@ -146,29 +146,6 @@ class OperationRegistry(val operator: String) {
 }
 
 fun main() {
-    MathsContext.empty {
-        withOperation("+") { a: Int, b: Int -> a + b }
-        withOperation("*") { a: Int, b: Int -> a * b }
-
-        // register axioms
-        val x by variable()
-        val y by variable()
-        withRule { "additiveCommutativity" { x + y to y + x } }
-        withRule { "multiplicativeCommutativity" { x * y to y * x } }
-
-        require(x + y equal y + x)
-
-        x equate 1
-
-        require(x equal 1)
-        require(x + y equal y + 1)
-
-        y equate 3
-
-        require(y equal 3)
-        require(x + y equal 4)
-    }
-
     // operator '+' exists
     // register add for int and int type combo
     fun add(a: ConstValue.IntVal, b: ConstValue.IntVal): ConstValue {
