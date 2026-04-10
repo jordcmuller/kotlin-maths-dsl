@@ -1,7 +1,6 @@
 package maths.core.egraph
 
 import maths.core.ast.Expr
-import maths.core.egraph.analysis.AnyAnalysisData
 import maths.core.egraph.analysis.OperatorRegistry
 
 open class EGraph {
@@ -16,7 +15,8 @@ open class EGraph {
 
     var latestId = 1
 
-    val worklist = mutableSetOf<EClass>()
+    val eClassesToMerge = mutableSetOf<EClass>()
+    val staleENodes = mutableSetOf<ENode>()
 
     fun add(expr: Expr): EClass {
         return lowerer.lower(expr, ::add)
@@ -38,7 +38,6 @@ open class EGraph {
     private fun processEClass(eClass: EClass) {
         unionFind.add(eClass)
         eClasses.add(eClass)
-        eClass.analysisData = AnyAnalysisData()
         eClass.nodes.forEach {
             eClass.analysisData = analysis.join(eClass.analysisData, analysis.make(this, it))
             eNodeHashCons[it.toHashKey] = eClass
@@ -52,7 +51,7 @@ open class EGraph {
     fun queueMerge(a: EClass, b: EClass): Boolean {
         if (!unionFind.union(a, b)) return false
 
-        with(worklist) {
+        with(eClassesToMerge) {
             add(a)
             add(b)
         }
@@ -63,16 +62,16 @@ open class EGraph {
     fun queueMergeAndRebuild(a: EClass, b: EClass) = queueMerge(a, b).also { rebuild() }
 
     fun rebuild() {
-        while (worklist.isNotEmpty()) {
+        while (eClassesToMerge.isNotEmpty()) {
             processPendingMerges()
-            canonicalizeAllNodes()
+            canonicalizeStaleNodes()
             propagateCongruence()
         }
     }
 
     private fun processPendingMerges() {
-        val eClassesToProcess = worklist.map { it }
-        worklist.clear()
+        val eClassesToProcess = eClassesToMerge.map { it }
+        eClassesToMerge.clear()
 
         val eClassGroups = eClassesToProcess
             .groupBy { it.canonicalEClass }
@@ -95,30 +94,32 @@ open class EGraph {
         canonicalEClass.analysisData = newAnalysisData
         analysis.modify(this, canonicalEClass)
         canonicalEClass.nodes += eClass.nodes
+        staleENodes.addAll(eClass.nodes)
     }
 
-    private fun canonicalizeAllNodes() {
-        eNodes.map { it }.forEach { eNode ->
-            val oldHashCons = eNode.toHashKey
-            val oldParent = eNode.parentEClass
-
-            eNode.parentEClass = eNode.parentEClass.canonicalEClass
-            eNode.childEClasses = eNode.childEClasses.map { it.canonicalEClass }
-
-            val newENodeAnalysisData = analysis.make(this, eNode) // todo: improve this computational efficiency
-            val jointAnalysisData = analysis.join(newENodeAnalysisData, eNode.parentEClass.analysisData)
-            eNode.parentEClass.analysisData = jointAnalysisData
-            analysis.modify(this, eNode.parentEClass)
-
-            val newHashCons = eNode.toHashKey
-            val newParent = eNode.parentEClass
-
-            val nothingHasChanged = oldParent == newParent && oldHashCons == newHashCons
-            if (nothingHasChanged) return@forEach
-
-            eNodeHashCons.remove(oldHashCons)
-            eNodeHashCons[newHashCons] = newParent
+    private fun canonicalizeStaleNodes() {
+        val eNodesToProcess = staleENodes.map { it }
+        staleENodes.clear()
+        eNodesToProcess.forEach {
+            canonicalizeNode(it)
+            recomputeAnalysis(it)
         }
+    }
+
+    private fun canonicalizeNode(eNode: ENode) {
+        val oldHashCons = eNode.toHashKey
+        eNodeHashCons.remove(oldHashCons)
+
+        eNode.parentEClass = eNode.parentEClass.canonicalEClass
+        eNode.childEClasses = eNode.childEClasses.map { it.canonicalEClass }
+
+        eNodeHashCons[eNode.toHashKey] = eNode.parentEClass
+    }
+
+    private fun recomputeAnalysis(eNode: ENode) {
+        val newENodeAnalysisData = analysis.make(this, eNode)
+        eNode.parentEClass.analysisData = analysis.join(newENodeAnalysisData, eNode.parentEClass.analysisData)
+        analysis.modify(this, eNode.parentEClass)
     }
 
     private fun propagateCongruence() {

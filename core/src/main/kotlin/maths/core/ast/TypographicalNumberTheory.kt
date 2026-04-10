@@ -15,7 +15,7 @@ enum class Operation(val symbol: String) {
 }
 
 //@JvmInline
-data class Const(val value: Int) : Expr
+data class Const(val value: Any) : Expr
 
 val zero = object: Expr {
     override fun toString() = "0"

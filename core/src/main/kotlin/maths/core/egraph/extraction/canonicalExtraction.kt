@@ -46,7 +46,7 @@ private fun ENode.calculateDepth(currentDepth: Int = 0): Int = nodeDepth.getOrPu
 }
 
 fun ENode.toExpr() = when (this) {
-    is EConst -> Const(identifier.toInt())
+    is EConst -> Const(value)
     is EVar -> Var(identifier)
     is EUnary -> UnaryExpr(Operation.fromString(operation), operand.canonicalForm)
     is EBinary -> BinaryExpr(left.canonicalForm, Operation.fromString(operation), right.canonicalForm)

@@ -22,7 +22,7 @@ class EGraphTests : StringSpec({
             eNodes shouldBe emptyList()
             eNodeHashCons shouldBe emptyMap()
             latestId shouldBe 1
-            worklist shouldBe emptyList()
+            eClassesToMerge shouldBe emptyList()
         }
     }
     "An EConst term can be added to the egraph and will reflect in the state" {
@@ -37,7 +37,7 @@ class EGraphTests : StringSpec({
             eNodeHashCons shouldHaveSize 1
             eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass)
             latestId shouldBe 2
-            worklist shouldBe emptyList()
+            eClassesToMerge shouldBe emptyList()
         }
     }
     "A variable can be added to the egraph and will reflect in the state" {
@@ -52,7 +52,7 @@ class EGraphTests : StringSpec({
             eNodeHashCons shouldHaveSize 1
             eNodeHashCons shouldBe mutableMapOf(expectedENode.toHashKey to expectedEClass.id)
             latestId shouldBe 2
-            worklist shouldBe emptyList()
+            eClassesToMerge shouldBe emptyList()
         }
     }
     "A composite expression can be added to the egraph and will reflect in the state" {
@@ -79,7 +79,7 @@ class EGraphTests : StringSpec({
                 expectedOperationENode.toHashKey to expectedOperationEClass.id,
             )
             latestId shouldBe 4
-            worklist shouldBe emptyList()
+            eClassesToMerge shouldBe emptyList()
         }
     }
     "Two eclasses can be merged which won't change congruence closure but the state but will add to the worklist" {}

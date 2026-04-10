@@ -13,7 +13,7 @@ tailrec fun EGraph.saturate(rewriteRules: List<RewriteRule>, maxIterations: Int 
         }
     }
 
-    if (worklist.isEmpty()) return
+    if (eClassesToMerge.isEmpty()) return
 
     rebuild()
 

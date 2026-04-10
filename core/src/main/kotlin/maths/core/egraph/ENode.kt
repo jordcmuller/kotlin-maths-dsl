@@ -20,7 +20,7 @@ data class EBinary(val left: EClass, val operation: String, val right: EClass) :
     }
 }
 
-data class EConst(val value: Int) : ENode(value.toString()) {
+data class EConst(val value: Any) : ENode(value.toString()) {
     override fun toString(): String {
         return "$value"
     }
