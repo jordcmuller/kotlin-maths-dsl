@@ -1,15 +1,11 @@
 package maths.core.egraph.analysis
 
 import maths.core.ast.Const
-import maths.core.dsl.MathsContext
-import maths.core.dsl.plus
-import maths.core.dsl.times
 import maths.core.egraph.EBinary
 import maths.core.egraph.EClass
 import maths.core.egraph.EConst
 import maths.core.egraph.EGraph
 import maths.core.egraph.ENode
-import maths.core.rewriting.dsl.invoke
 import kotlin.reflect.KClass
 
 //class ValuePropagationAnalysis : Analysis {
@@ -72,10 +68,8 @@ import kotlin.reflect.KClass
 
 class OperatorRegistry: Analysis {
     val map = mutableMapOf<String, OperationRegistry>()
-    override fun make(
-        eGraph: EGraph,
-        eNode: ENode
-    ): AnyAnalysisData {
+
+    override fun make(eGraph: EGraph, eNode: ENode): AnyAnalysisData {
         return when (eNode) {
             is EConst -> AnyAnalysisData(eNode.value)
 
@@ -94,21 +88,17 @@ class OperatorRegistry: Analysis {
         }
     }
 
-    override fun join(
-        a: AnyAnalysisData,
-        b: AnyAnalysisData
-    ): AnyAnalysisData {
-        if (a.value == null && b.value == null) return AnyAnalysisData()
-
-        if (a.value == null) return AnyAnalysisData(b.value)
-        if (b.value == null) return AnyAnalysisData(a.value)
-
-        if (a.value == b.value) return AnyAnalysisData(a.value)
-        error("Conflict: a = ${a.value} != b = ${b.value}")
+    override fun join(a: AnyAnalysisData, b: AnyAnalysisData) = when {
+        a.value == null && b.value == null -> AnyAnalysisData()
+        a.value == null -> AnyAnalysisData(b.value)
+        b.value == null -> AnyAnalysisData(a.value)
+        a.value == b.value -> AnyAnalysisData(a.value)
+        else -> error("Conflict when joining AnyAnalysisData objects: ${a.value} != ${b.value}")
     }
 
     override fun modify(eGraph: EGraph, eClass: EClass) {
-        val value = eGraph.findEClass(eClass).analysisData.value as? Int ?: return
+        val canonicalEClass = eGraph.findEClass(eClass)
+        val value = canonicalEClass.analysisData.value ?: return
 
         val constEClass = eGraph.add(Const(value))
         eGraph.queueMerge(eClass, constEClass)
@@ -137,12 +127,17 @@ class OperationRegistry(val operator: String) {
         return func as (T1, T2) -> Any
     }
 
-    fun <T1 : Any, T2 : Any> get(item1: T1, item2: T2): (T1, T2) -> Any {
-        val key = listOf(item1::class, item2::class)
-        val func = functionMap[key] ?: throw IllegalArgumentException("No function registered for types: $key")
-        return func as (T1, T2) -> Any
+    fun <T1 : Any> get(item1: T1): ((T1) -> Any)? {
+        val key = listOf(item1::class)
+        val func = functionMap[key] ?: return null
+        return func as (T1) -> Any
     }
 
+    fun <T1 : Any, T2 : Any> get(item1: T1, item2: T2): ((T1, T2) -> Any)? {
+        val key = listOf(item1::class, item2::class)
+        val func = functionMap[key] ?: return null
+        return func as (T1, T2) -> Any
+    }
 }
 
 fun main() {
@@ -165,7 +160,7 @@ fun main() {
     val addAgain = registry.get(ConstValue.IntVal(1), 2)
 
     val result = addFunc(ConstValue.IntVal(1), ConstValue.IntVal(2))
-    val result3 = addAgain(ConstValue.IntVal(10), 10)
+    val result3 = addAgain?.invoke(ConstValue.IntVal(10), 10)
 
     println(result)
     println(result3)

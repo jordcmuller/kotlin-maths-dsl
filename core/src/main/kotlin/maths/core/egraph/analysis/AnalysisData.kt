@@ -15,15 +15,15 @@ interface JoinSemiLattice<T> {
     fun join(other: T): T
 }
 
-interface AnalysisData
+interface AnalysisData<T>
 
-data class AnyAnalysisData(val value: Any? = null): AnalysisData
+data class AnyAnalysisData(val value: Any? = null): AnalysisData<Any>
 
 data class ConstAnalysisData(
     val constValue: ConstValue = ConstValue.Unknown
-) : AnalysisData, JoinSemiLattice<AnalysisData> {
+) : AnalysisData<ConstValue>, JoinSemiLattice<AnalysisData<ConstValue>> {
 
-    override fun join(other: AnalysisData): AnalysisData {
+    override fun join(other: AnalysisData<ConstValue>): AnalysisData<ConstValue> {
         if (other !is ConstAnalysisData) error("Not a ConstAnalysisData")
         return ConstAnalysisData(
             constValue = this.constValue.join(other.constValue)
