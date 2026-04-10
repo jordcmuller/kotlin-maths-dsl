@@ -4,6 +4,7 @@ import maths.core.egraph.analysis.AnyAnalysisData
 
 class EClass(val id: Int, val nodes: MutableList<ENode> = mutableListOf()) {
     var analysisData = AnyAnalysisData()
+    val parentNodes = mutableListOf<ENode>()
 
     override fun hashCode() = id
 

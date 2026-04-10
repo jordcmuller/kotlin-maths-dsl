@@ -1,5 +1,6 @@
 package maths.core.egraph
 
+import maths.core.ast.Const
 import maths.core.ast.Expr
 import maths.core.egraph.analysis.OperatorRegistry
 
@@ -19,7 +20,7 @@ open class EGraph {
     val staleENodes = mutableSetOf<ENode>()
 
     fun add(expr: Expr): EClass {
-        return lowerer.lower(expr, ::add)
+        return lowerer.lower(expr, ::add).also { rebuild() }
     }
 
     fun add(eNode: ENode): EClass {
@@ -27,12 +28,12 @@ open class EGraph {
     }
 
     fun createEClass(eNode: ENode): EClass {
-        return EClass(latestId++, mutableListOf(eNode)).also {
-            processEClass(it)
+        val newEClass = EClass(latestId++, mutableListOf(eNode))
 
-            eNode.parentEClass = it
-            eNodes.add(eNode)
-        }
+        processEClass(newEClass)
+        processENode(newEClass, eNode)
+
+        return newEClass
     }
 
     private fun processEClass(eClass: EClass) {
@@ -40,8 +41,15 @@ open class EGraph {
         eClasses.add(eClass)
         eClass.nodes.forEach {
             eClass.analysisData = analysis.join(eClass.analysisData, analysis.make(this, it))
+            staleENodes.addAll(eClass.parentNodes)
             eNodeHashCons[it.toHashKey] = eClass
         }
+    }
+
+    private fun processENode(eClass: EClass, eNode: ENode) {
+        eNode.parentEClass = eClass
+        eNode.childEClasses.forEach { child -> child.parentNodes.add(eNode) }
+        eNodes.add(eNode)
     }
 
     fun findCanonicalEClass(eClass: EClass) = eClass.canonicalEClass
@@ -62,7 +70,7 @@ open class EGraph {
     fun queueMergeAndRebuild(a: EClass, b: EClass) = queueMerge(a, b).also { rebuild() }
 
     fun rebuild() {
-        while (eClassesToMerge.isNotEmpty()) {
+        while (eClassesToMerge.isNotEmpty() || staleENodes.isNotEmpty()) {
             processPendingMerges()
             canonicalizeStaleNodes()
             propagateCongruence()
@@ -87,13 +95,11 @@ open class EGraph {
     }
 
     private fun handleMerge(canonicalEClass: EClass, eClass: EClass) {
-        val newAnalysisData = analysis.join(canonicalEClass.analysisData, eClass.analysisData)
+        canonicalEClass.nodes += eClass.nodes
+        canonicalEClass.analysisData = analysis.join(canonicalEClass.analysisData, eClass.analysisData)
 
         eClasses.remove(eClass)
-
-        canonicalEClass.analysisData = newAnalysisData
-        analysis.modify(this, canonicalEClass)
-        canonicalEClass.nodes += eClass.nodes
+        staleENodes.addAll(eClass.parentNodes)
         staleENodes.addAll(eClass.nodes)
     }
 
@@ -117,9 +123,17 @@ open class EGraph {
     }
 
     private fun recomputeAnalysis(eNode: ENode) {
+        val eClass = eNode.parentEClass
+
         val newENodeAnalysisData = analysis.make(this, eNode)
-        eNode.parentEClass.analysisData = analysis.join(newENodeAnalysisData, eNode.parentEClass.analysisData)
-        analysis.modify(this, eNode.parentEClass)
+        val joined = analysis.join(newENodeAnalysisData, eClass.analysisData)
+        eClass.analysisData = joined
+        staleENodes.addAll(eClass.parentNodes)
+
+        if (joined.value == null) return
+
+        val constEClass = add(Const(joined.value))
+        queueMerge(eClass, constEClass)
     }
 
     private fun propagateCongruence() {

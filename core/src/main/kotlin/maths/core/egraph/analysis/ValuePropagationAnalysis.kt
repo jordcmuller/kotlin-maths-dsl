@@ -96,13 +96,7 @@ class OperatorRegistry: Analysis {
         else -> error("Conflict when joining AnyAnalysisData objects: ${a.value} != ${b.value}")
     }
 
-    override fun modify(eGraph: EGraph, eClass: EClass) {
-        val canonicalEClass = eGraph.findCanonicalEClass(eClass)
-        val value = canonicalEClass.analysisData.value ?: return
-
-        val constEClass = eGraph.add(Const(value))
-        eGraph.queueMerge(eClass, constEClass)
-    }
+    override fun modify(eGraph: EGraph, eClass: EClass) {}
 }
 
 class OperationRegistry(val operator: String) {
