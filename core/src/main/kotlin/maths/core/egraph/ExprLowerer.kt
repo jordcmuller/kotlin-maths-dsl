@@ -1,10 +1,26 @@
 package maths.core.egraph
 
 import maths.core.ast.*
+import kotlin.reflect.KClass
 
 class ExprLowerer {
-    fun lower(expr: Expr, add: (ENode) -> EClass): EClass =
-        when (expr) {
+
+    lateinit var eGraph: EGraph
+    val loweringFunctions = mutableMapOf<KClass<*>, (EGraph, Any) -> Any>()
+
+    fun <T1 : Any> get(item1: T1): ((EGraph, T1) -> ENode)? {
+        val func = loweringFunctions[item1::class] ?: return null
+        return func as (EGraph, T1) -> ENode
+    }
+
+    fun lower(expr: Expr, add: (ENode) -> EClass): EClass {
+
+        val dynamicFunc = get(expr)
+        if (dynamicFunc != null) {
+            return add(dynamicFunc(eGraph, expr))
+        }
+
+        return when (expr) {
             is Const -> add(EConst(expr.value))
 
             is Var -> add(EVar(expr.name))
@@ -28,5 +44,6 @@ class ExprLowerer {
 
             else -> error("Unknown expression")
         }
+    }
 }
 

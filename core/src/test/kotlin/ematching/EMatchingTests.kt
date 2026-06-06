@@ -13,14 +13,14 @@ import maths.core.egraph.extraction.canonicalForm
 class EMatchingTests : StringSpec({
     val egg = MathsEGraph()
 
-    val xEClass = egg.add("x".v)
-    val yEClass = egg.add("y".v)
-    val oneEClass = egg.add(1.c)
-    val twoEClass = egg.add(2.c)
-    val xPlusYEClass = egg.add("x".v + "y".v)
-    val onePlusTwoEClass = egg.add(1.c + 2.c)
-    val xPlusTwoEClass = egg.add("x".v + 2.c)
-    val xPlusYPlusOneEClass = egg.add("x".v + "y".v + 1.c)
+    val xEClass = egg.addExpr("x".v)
+    val yEClass = egg.addExpr("y".v)
+    val oneEClass = egg.addExpr(1.c)
+    val twoEClass = egg.addExpr(2.c)
+    val xPlusYEClass = egg.addExpr("x".v + "y".v)
+    val onePlusTwoEClass = egg.addExpr(1.c + 2.c)
+    val xPlusTwoEClass = egg.addExpr("x".v + 2.c)
+    val xPlusYPlusOneEClass = egg.addExpr("x".v + "y".v + 1.c)
 
     "AnyNode should match all nodes" {
         val result = egg.eMatch(AnyNode("any"))

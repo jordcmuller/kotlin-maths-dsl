@@ -16,7 +16,7 @@ interface GraphAction {
 // add
 class ProduceAction(val expression: EMatcher) : GraphAction {
     override fun act(result: EMatchResult, graph: EGraph) {
-        graph.add(expression.eMatcherToExpr(result))
+        graph.addExpr(expression.eMatcherToExpr(result))
     }
 }
 
@@ -24,8 +24,8 @@ class ProduceAction(val expression: EMatcher) : GraphAction {
 // merge
 class EquateAction(val left: EMatcher, val right: EMatcher) : GraphAction {
     override fun act(result: EMatchResult, graph: EGraph) {
-        val leftId = graph.add(left.eMatcherToExpr(result))
-        val rightId = graph.add(right.eMatcherToExpr(result))
+        val leftId = graph.addExpr(left.eMatcherToExpr(result))
+        val rightId = graph.addExpr(right.eMatcherToExpr(result))
         graph.queueMerge(leftId, rightId)
     }
 }

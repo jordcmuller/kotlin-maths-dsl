@@ -12,7 +12,6 @@ class VectorAnalysisDataTest: StringSpec({
     data class VectorTest(val x: Int, val y: Int)
     fun vector(x: Int, y: Int) = Const(VectorTest(x, y))
 
-
     "Vector addition carries forward to compound operations" {
         MathsContext.empty {
             infix fun Expr.shouldEqual(other: Expr) = this equal other shouldBe true

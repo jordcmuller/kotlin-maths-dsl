@@ -27,7 +27,7 @@ class EGraphTests : StringSpec({
     }
     "An EConst term can be added to the egraph and will reflect in the state" {
         with(MathsEGraph()) {
-            add(1.c)
+            addExpr(1.c)
 
             val expectedENode = EConst(1)
             val expectedEClass = EClass(1, mutableListOf(expectedENode))
@@ -42,7 +42,7 @@ class EGraphTests : StringSpec({
     }
     "A variable can be added to the egraph and will reflect in the state" {
         with(MathsEGraph()) {
-            add("x".v)
+            addExpr("x".v)
 
             val expectedENode = EVar("x")
             val expectedEClass = EClass(1, mutableListOf(expectedENode))
@@ -57,7 +57,7 @@ class EGraphTests : StringSpec({
     }
     "A composite expression can be added to the egraph and will reflect in the state" {
         with(MathsEGraph()) {
-            add("x".v + 1.c)
+            addExpr("x".v + 1.c)
 
             val expectedLeftENode = EVar("x")
             val expectedLeftEClass = EClass(1, mutableListOf(expectedLeftENode))

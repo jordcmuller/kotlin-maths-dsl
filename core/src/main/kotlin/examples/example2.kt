@@ -22,8 +22,9 @@ fun main() {
 
         withRule { "distributivity" { m * (n + k) to m * n + m * k } }
 
-        withRule { "additiveIdentity" { m + 0 to m } }
-        withRule { "multiplicativeIdentity" { m * 1 to m } }
+        // todo: figure out why identity rules are exploding
+//        withRule { "additiveIdentity" { m + 0 to m } }
+//        withRule { "multiplicativeIdentity" { m * 1 to m } }
 
         // TODO: figure out a better class structure for the rewrite rule DSL
         val multiplicativeCancellation by m to n where { k notEqual 0.c and (k * m equal k * n) }

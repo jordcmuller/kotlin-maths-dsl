@@ -5,6 +5,9 @@ import maths.core.ast.Equation
 import maths.core.ast.Equivalence
 import maths.core.ast.Expr
 import maths.core.ast.Stmt
+import maths.core.egraph.EGraph
+import maths.core.egraph.ENode
+import maths.core.egraph.ExprLowerer
 import maths.core.format.readable
 import maths.core.rewriting.RewriteRule
 import maths.core.rewriting.additiveAssociativity
@@ -33,9 +36,14 @@ class MathsContext(noRules: Boolean = false) {
     init { if (!noRules) withAdditionAndMultiplicationRules() }
 
     val operatorRegistry = OperatorRegistry()
+    val lowerer = ExprLowerer()
     val eGraph = MathsEGraph()
 
-    init { eGraph.analysis = operatorRegistry }
+    init {
+        eGraph.analysis = operatorRegistry
+        eGraph.lowerer = lowerer
+        lowerer.eGraph = eGraph
+    }
 
     val statements = mutableListOf<Stmt>()
     val errors = mutableListOf<ValidationError>()
@@ -50,8 +58,8 @@ class MathsContext(noRules: Boolean = false) {
     fun variable(name: String? = null) = VariableDelegate(name)
 
     infix fun Expr.equate(other: Expr) {
-        val leftEClass = eGraph.add(this)
-        val rightEClass = eGraph.add(other)
+        val leftEClass = eGraph.addExpr(this)
+        val rightEClass = eGraph.addExpr(other)
         eGraph.queueMergeAndRebuild(leftEClass, rightEClass)
     }
 
@@ -70,6 +78,10 @@ class MathsContext(noRules: Boolean = false) {
     inline fun <reified T1: Any, reified T2: Any> withOperation(symbol: String, noinline func: (T1, T2) -> Any) {
         val operator = operatorRegistry.map.getOrPut(symbol) { OperationRegistry(symbol) }
         operator.register(func)
+    }
+
+    inline fun <reified T1: Expr, reified R1: ENode> withENode(noinline func: EGraph.(T1) -> R1) {
+        lowerer.loweringFunctions.getOrPut(T1::class) { func as (EGraph, Any) -> Any }
     }
 
     companion object {
@@ -92,8 +104,8 @@ class MathsContext(noRules: Boolean = false) {
     }
 
     private fun semanticallyEquivalent(a: Expr, b: Expr): Boolean {
-        val aEClass = eGraph.add(a)
-        val bEClass = eGraph.add(b)
+        val aEClass = eGraph.addExpr(a)
+        val bEClass = eGraph.addExpr(b)
 
         if (aEClass == bEClass) return true
 

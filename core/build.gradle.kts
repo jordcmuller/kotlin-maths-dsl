@@ -28,6 +28,7 @@ kotlin {
         freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xwhen-guards")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
+        freeCompilerArgs.add("-Xname-based-destructuring=complete")
     }
 }
 

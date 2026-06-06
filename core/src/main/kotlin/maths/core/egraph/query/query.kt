@@ -41,9 +41,9 @@ private fun EGraph.handleCondition(currentPremise: QueryCondition, currentResult
 
             val equalResults = rightResults.filter { result ->
                 val leftExpr = currentPremise.left.pattern.eMatcherToExpr(result)
-                val leftEClass = add(leftExpr)
+                val leftEClass = addExpr(leftExpr)
                 val rightExpr = currentPremise.right.pattern.eMatcherToExpr(result)
-                val rightEClass = add(rightExpr)
+                val rightEClass = addExpr(rightExpr)
                 leftEClass == rightEClass
             }
 
@@ -55,9 +55,9 @@ private fun EGraph.handleCondition(currentPremise: QueryCondition, currentResult
 
             val equalResults = rightResults.filter { result ->
                 val leftExpr = currentPremise.left.pattern.eMatcherToExpr(result)
-                val leftEClass = add(leftExpr)
+                val leftEClass = addExpr(leftExpr)
                 val rightExpr = currentPremise.right.pattern.eMatcherToExpr(result)
-                val rightEClass = add(rightExpr)
+                val rightEClass = addExpr(rightExpr)
                 leftEClass != rightEClass
             }
 

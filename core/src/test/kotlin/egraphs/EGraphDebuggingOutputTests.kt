@@ -12,7 +12,7 @@ class EGraphDebuggingOutputTests : StringSpec({
     "A constant in the egraph should show debug output" {
         val eGraph = MathsEGraph()
 
-        eGraph.add(1.c)
+        eGraph.addExpr(1.c)
 
         val debugOutput = eGraph.print()
 
@@ -28,7 +28,7 @@ class EGraphDebuggingOutputTests : StringSpec({
     "A variable in the egraph should show debug output" {
         val eGraph = MathsEGraph()
 
-        eGraph.add("x".v)
+        eGraph.addExpr("x".v)
 
         eGraph.print() shouldBe """
             EGraph
@@ -40,8 +40,8 @@ class EGraphDebuggingOutputTests : StringSpec({
     "Two variables in the egraph should show debug output" {
         val eGraph = MathsEGraph()
 
-        eGraph.add("x".v)
-        eGraph.add("y".v)
+        eGraph.addExpr("x".v)
+        eGraph.addExpr("y".v)
 
         val debugOutput = eGraph.print()
 
@@ -59,7 +59,7 @@ class EGraphDebuggingOutputTests : StringSpec({
     "A composite expression in the egraph should show debug output" {
         val eGraph = MathsEGraph()
 
-        eGraph.add("x".v + "y".v)
+        eGraph.addExpr("x".v + "y".v)
 
         val debugOutput = eGraph.print()
 

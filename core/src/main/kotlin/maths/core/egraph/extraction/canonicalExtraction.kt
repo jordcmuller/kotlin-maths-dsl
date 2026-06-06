@@ -42,6 +42,7 @@ private fun ENode.calculateDepth(currentDepth: Int = 0): Int = nodeDepth.getOrPu
         is EConst -> 0
         is EVar -> 1
         is EUnary, is EBinary -> 1 + childEClasses.sumOf { it.calculateDepth(currentDepth + 1) }
+        else -> error("Unknown node type ${this}")
     }
 }
 
@@ -50,6 +51,7 @@ fun ENode.toExpr() = when (this) {
     is EVar -> Var(identifier)
     is EUnary -> UnaryExpr(Operation.fromString(operation), operand.canonicalForm)
     is EBinary -> BinaryExpr(left.canonicalForm, Operation.fromString(operation), right.canonicalForm)
+    else -> error("Unsupported operation: $this")
 }
 
 

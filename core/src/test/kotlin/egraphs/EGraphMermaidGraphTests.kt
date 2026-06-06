@@ -12,7 +12,7 @@ class EGraphMermaidGraphTests : StringSpec({
     "A constant in the egraph should generate a mermaid diagram" {
         val eGraph = MathsEGraph()
 
-        eGraph.add(1.c)
+        eGraph.addExpr(1.c)
 
         val debugOutput = eGraph.toMermaid()
 
@@ -31,7 +31,7 @@ class EGraphMermaidGraphTests : StringSpec({
     "A variable in the egraph should generate a mermaid diagram" {
         val eGraph = MathsEGraph()
 
-        eGraph.add("x".v)
+        eGraph.addExpr("x".v)
 
         val debugOutput = eGraph.toMermaid()
 
@@ -50,8 +50,8 @@ class EGraphMermaidGraphTests : StringSpec({
     "Two variables in the egraph should generate a mermaid diagram" {
         val eGraph = MathsEGraph()
 
-        eGraph.add("x".v)
-        eGraph.add("y".v)
+        eGraph.addExpr("x".v)
+        eGraph.addExpr("y".v)
 
         val debugOutput = eGraph.toMermaid()
 
@@ -75,7 +75,7 @@ class EGraphMermaidGraphTests : StringSpec({
     "A composite expression in the egraph should generate a mermaid diagram" {
         val eGraph = MathsEGraph()
 
-        eGraph.add("x".v + "y".v)
+        eGraph.addExpr("x".v + "y".v)
 
         eGraph.toMermaid() shouldBe """
             graph TD
@@ -103,9 +103,9 @@ class EGraphMermaidGraphTests : StringSpec({
     "A composite expression in the egraph should generate a mermaid diagram which updates when the operands are merged" {
         val eGraph = MathsEGraph()
 
-        val xEClass = eGraph.add("x".v)
-        val yEClass = eGraph.add("y".v)
-        eGraph.add("x".v + "y".v)
+        val xEClass = eGraph.addExpr("x".v)
+        val yEClass = eGraph.addExpr("y".v)
+        eGraph.addExpr("x".v + "y".v)
 
         eGraph.toMermaid() shouldBe """
             graph TD
