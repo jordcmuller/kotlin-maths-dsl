@@ -49,8 +49,16 @@ class MathsContext(noRules: Boolean = false) {
     val errors = mutableListOf<ValidationError>()
 
     /** DSL Definition */
-    infix fun Expr.equal(other: Expr) = (this eq other).equivalence == Equivalence.True
-    infix fun Expr.notEqual(other: Expr) = (this eq other).equivalence == Equivalence.False
+    infix fun Expr.equal(other: Expr): Boolean {
+        println("Processing equality $this == $other")
+        return (this eq other).equivalence == Equivalence.True
+    }
+    infix fun Expr.notEqual(other: Expr): Boolean {
+        println("Processing inequality $this != $other")
+        return (this eq other).equivalence == Equivalence.False
+    }
+    infix fun Expr.strictEqual(other: Expr) = require(this equal other) { "strictEqual failed: $this != $other" }
+    infix fun Expr.strictNotEqual(other: Expr) = require(this notEqual other) { "strictNotEqual failed: $this == $other" }
 
     infix fun Expr.eq(other: Expr): Equation = Equation(this, other).also(::processEquation)
     infix fun Expr.eq(other: Int) = this eq Const(other)
@@ -85,7 +93,7 @@ class MathsContext(noRules: Boolean = false) {
     }
 
     companion object {
-        val empty = MathsContext(noRules = true)
+        val empty get() = MathsContext(noRules = true)
     }
 
     fun processEquation(equation: Equation) {

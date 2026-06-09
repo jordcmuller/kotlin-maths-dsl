@@ -32,15 +32,10 @@ fun EMatcher.eMatcherToExpr(matchResult: EMatchResult): Expr {
     }
 }
 
-open class RewriteRule(val name: String, val query: GraphQuery, val actions: List<GraphAction>) {
+open class RewriteRule(val name: String, val queries: List<GraphQuery>) {
     override fun toString(): String {
         return name
     }
-}
-
-infix fun GraphQuery.then(actionBuilderFunc: GraphActionBuilder.() -> Unit): RewriteRule {
-    val actions = GraphActionBuilder().apply(actionBuilderFunc).build()
-    return RewriteRule("empty name", this, actions)
 }
 
 fun main() {
@@ -50,7 +45,6 @@ fun main() {
     val rule = query {
         match { x + y }
         where { x equal y }
-    } then {
-        produce { y + x }
+        then { produce { y + x } }
     }
 }

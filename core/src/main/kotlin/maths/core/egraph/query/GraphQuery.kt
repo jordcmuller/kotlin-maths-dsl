@@ -3,12 +3,16 @@ package maths.core.egraph.query
 import maths.core.ast.Expr
 import maths.core.dsl.plus
 import maths.core.dsl.variable
+import maths.core.egraph.action.GraphAction
+import maths.core.egraph.action.GraphActionBuilder
+import maths.core.egraph.action.actions
 import maths.core.egraph.toEMatcher
 
-data class GraphQuery(val premises: List<QueryCondition>)
+data class GraphQuery(val premises: List<QueryCondition>, var actions: List<GraphAction> = emptyList())
 
 class QueryBuilder {
     private val premises = mutableListOf<QueryCondition>()
+    private val actions = mutableListOf<GraphAction>()
 
     fun match(exprFunc: () -> Expr) {
         premises += PatternCondition(exprFunc().toEMatcher())
@@ -18,7 +22,11 @@ class QueryBuilder {
         premises += ConditionFactory.conditionFunc()
     }
 
-    fun build(): GraphQuery = GraphQuery(premises)
+    fun then(actionBuilderFunc: GraphActionBuilder.() -> Unit) {
+        actions.addAll(actions(actionBuilderFunc))
+    }
+
+    fun build(): GraphQuery = GraphQuery(premises, actions)
 }
 
 object ConditionFactory {
@@ -39,5 +47,9 @@ fun main() {
     query {
         match { x + y }
         where { x equal y }
+        then {
+            produce { x + x }
+            x equate y
+        }
     }
 }

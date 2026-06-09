@@ -1,8 +1,8 @@
 package maths.core.rewriting.dsl
 
 import maths.core.ast.Expr
-import maths.core.egraph.action.actions
 import maths.core.egraph.query.ConditionFactory
+import maths.core.egraph.query.GraphQuery
 import maths.core.egraph.query.QueryCondition
 import maths.core.egraph.query.query
 import maths.core.rewriting.RewriteRule
@@ -10,23 +10,34 @@ import kotlin.reflect.KProperty
 
 class RewriteRuleBuilder {
     var name = ""
-    lateinit var from: Expr
-    lateinit var to: Expr
+    lateinit var leftHandSide: Expr
+    lateinit var rightHandSide: Expr
     lateinit var conditionBlock: ConditionFactory.() -> QueryCondition
+    var implies: Boolean = false
 
     fun build(): RewriteRule {
-        val query = query {
-            match { from }
+        val queries = mutableListOf<GraphQuery>()
+        queries += query {
+            match { leftHandSide }
             if (::conditionBlock.isInitialized) {
                 where(conditionBlock)
             }
+            then {
+                leftHandSide equate rightHandSide
+            }
         }
 
-        val actions = actions {
-            from equate to
+        if (!implies) queries += query {
+            match { rightHandSide }
+            if (::conditionBlock.isInitialized) {
+                where(conditionBlock)
+            }
+            then {
+                rightHandSide equate leftHandSide
+            }
         }
 
-        return RewriteRule(name, query, actions)
+        return RewriteRule(name, queries)
     }
 }
 
@@ -38,16 +49,30 @@ class RewriteRuleDelegate(val builder: RewriteRuleBuilder) {
 
 operator fun Pair<Expr, Expr>.provideDelegate(thisRef: Any?, property: KProperty<*>): RewriteRuleDelegate {
     val rewriteRuleBuilder = RewriteRuleBuilder().apply {
-        from = first
-        to = second
+        leftHandSide = first
+        rightHandSide = second
+    }
+    return RewriteRuleDelegate(rewriteRuleBuilder)
+}
+
+class ImpliesPair(val leftHandSide: Expr, val rightHandSide: Expr) {}
+
+infix fun Expr.implies(other: Expr) = ImpliesPair(this, other)
+infix fun Expr.impliedBy(other: Expr) = ImpliesPair(other, this)
+
+operator fun ImpliesPair.provideDelegate(thisRef: Any?, property: KProperty<*>): RewriteRuleDelegate {
+    val rewriteRuleBuilder = RewriteRuleBuilder().apply {
+        implies = true
+        leftHandSide = this@provideDelegate.leftHandSide
+        rightHandSide = this@provideDelegate.rightHandSide
     }
     return RewriteRuleDelegate(rewriteRuleBuilder)
 }
 
 infix fun Pair<Expr, Expr>.where(conditionBlock: ConditionFactory.() -> QueryCondition): RewriteRuleDelegate {
     val rewriteRuleBuilder = RewriteRuleBuilder().apply {
-        from = first
-        to = second
+        leftHandSide = first
+        rightHandSide = second
         this.conditionBlock = conditionBlock
     }
 
@@ -59,8 +84,8 @@ fun rewriteRule(name: String = "", ruleBlock: () -> Pair<Expr, Expr>): RewriteRu
 
     val rewriteRuleBuilder = RewriteRuleBuilder().apply {
         this.name = name
-        from = pair.first
-        to = pair.second
+        leftHandSide = pair.first
+        rightHandSide = pair.second
     }
 
     return rewriteRuleBuilder.build()

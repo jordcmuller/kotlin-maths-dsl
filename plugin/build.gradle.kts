@@ -21,7 +21,7 @@ repositories {
 dependencies {
   implementation(project(":core"))
   intellijPlatform {
-    create("IC", "2025.2.5")
+    intellijIdeaCommunity("2025.2.5")
     testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
 
     // Add necessary plugin dependencies for compilation here, example:

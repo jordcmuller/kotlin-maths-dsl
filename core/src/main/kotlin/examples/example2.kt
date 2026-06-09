@@ -17,30 +17,32 @@ fun main() {
         withRule { rewriteRule("additiveCommutativity") { m + n to n + m } }
         withRule { "multiplicativeCommutativity" { m * n to n * m } }
 
-        withRule { "additiveAssociativity" { (m + n) + k to n + (m + k) } }
-        withRule { "multiplicativeAssociativity" { (m * n) * k to n * (m * k) } }
+        withRule { "additiveAssociativity" { (m + n) + k to m + (n + k) } }
+        withRule { "multiplicativeAssociativity" { (m * n) * k to m * (n * k) } }
 
         withRule { "distributivity" { m * (n + k) to m * n + m * k } }
 
         // todo: figure out why identity rules are exploding
-//        withRule { "additiveIdentity" { m + 0 to m } }
+        withRule { "additiveIdentity" { m + 0 to m } }
 //        withRule { "multiplicativeIdentity" { m * 1 to m } }
 
-        // TODO: figure out a better class structure for the rewrite rule DSL
-        val multiplicativeCancellation by m to n where { k notEqual 0.c and (k * m equal k * n) }
-        withRule { multiplicativeCancellation }
+//        val multiplicativeCancellation by m to n where { k notEqual 0.c and (k * m equal k * n) }
+//        withRule { multiplicativeCancellation }
+        val additiveCancellation by m to n where { k notEqual 0.c and (k + m equal k + n) }
+        withRule { additiveCancellation }
 
         m + k equate n + k
 
         val l by variable()
 
+//        l * m equate l * n
         k + l equate 0
 
-        require((m + k) + l equal (n + k) + l)
-        require(m + (k + l) equal n + (k + l))
+        (m + k) + l strictEqual (n + k) + l
+        m + (k + l) strictEqual n + (k + l)
 
-        require(m + 0 equal n + 0)
+        m + 0 strictEqual n + 0
 
-        require(m equal n)
+        m strictEqual n
     }
 }

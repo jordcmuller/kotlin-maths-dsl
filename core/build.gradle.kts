@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.klogging:klogging:0.11.8")
     testImplementation("io.kotest:kotest-framework-engine:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")

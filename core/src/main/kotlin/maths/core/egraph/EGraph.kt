@@ -21,14 +21,17 @@ open class EGraph {
     val staleChildENodes = mutableSetOf<ENode>()
 
     fun addExpr(expr: Expr): EClass {
+        println("Adding expression $expr")
         return lowerer.lower(expr, ::addENode)
     }
 
     fun addENode(eNode: ENode): EClass {
-        return findEClass(eNode) ?: createEClass(eNode)
+        println("Handling enode $eNode")
+        return findEClass(eNode)?.also { println("Found existing eclass $it") } ?: createEClass(eNode)
     }
 
     fun createEClass(eNode: ENode): EClass {
+        println("Creating new eclass for enode $eNode")
         val newEClass = EClass(latestId++, mutableListOf(eNode))
 
         processEClass(newEClass)
@@ -63,6 +66,7 @@ open class EGraph {
     fun queueMerge(a: EClass, b: EClass): Boolean {
         if (!unionFind.union(a, b)) return false
 
+        println("Queuing merge for eclasses $a to $b")
         with(eClassesToMerge) {
             add(a)
             add(b)
@@ -74,6 +78,7 @@ open class EGraph {
     fun queueMergeAndRebuild(a: EClass, b: EClass) = queueMerge(a, b).also { rebuild() }
 
     fun rebuild() {
+        println("Rebuilding egraph starting with ${eClassesToMerge.size} eclasses to merge")
         while (eClassesToMerge.isNotEmpty()) {
             processPendingMerges()
             canonicalizeStaleNodes()
@@ -82,6 +87,7 @@ open class EGraph {
     }
 
     private fun processPendingMerges() {
+        println("Processing pending merges")
         val eClassesToProcess = eClassesToMerge.map { it }
         eClassesToMerge.clear()
 
@@ -92,9 +98,12 @@ open class EGraph {
             }
 
         eClassGroups.forEach { (canonicalEClass = key, eClassesPendingMerge = value) ->
+            println("Processing pending merge for $canonicalEClass")
+            println(eClassesPendingMerge.joinToString("\n"))
             eClassesPendingMerge.forEach {
                 handleMerge(canonicalEClass, it)
             }
+            println("Merges complete")
         }
     }
 
@@ -108,11 +117,13 @@ open class EGraph {
     }
 
     private fun canonicalizeStaleNodes() {
+        println("Canonicalizing stale nodes")
         updateStaleChildrenENodes()
         updateStaleParentENodes()
     }
 
     private fun updateStaleChildrenENodes() {
+        println("Updating stale children: count ${staleChildENodes.size}")
         staleChildENodes.forEach { child ->
             child.parentEClass = child.parentEClass.canonicalEClass
         }
@@ -120,17 +131,23 @@ open class EGraph {
     }
 
     private fun updateStaleParentENodes() {
+        val alreadyUpdated = mutableSetOf<ENode>()
+        println("Updating stale parents: starting with count ${staleParentENodes.size}")
         while (staleParentENodes.isNotEmpty()) {
             val staleParents = staleParentENodes.map { it }
             staleParentENodes.clear()
-            staleParents.forEach {
+            val needToUpdate = staleParents - alreadyUpdated
+            needToUpdate.forEach {
                 canonicalizeNode(it)
                 recomputeAnalysis(it)
             }
+            alreadyUpdated.addAll(needToUpdate)
         }
     }
 
     private fun canonicalizeNode(eNode: ENode) {
+        println("Canonicalizing $eNode")
+
         val oldHashCons = eNode.toHashKey
         eNodeHashCons.remove(oldHashCons)
 
@@ -140,12 +157,13 @@ open class EGraph {
     }
 
     private fun recomputeAnalysis(eNode: ENode) {
+        println("Recomputing analysis for enode $eNode")
         val eClass = eNode.parentEClass
 
         val newENodeAnalysisData = analysis.make(this, eNode)
         val joined = analysis.join(newENodeAnalysisData, eClass.analysisData)
         eClass.analysisData = joined
-        staleParentENodes.addAll(eClass.parentNodes)
+        staleParentENodes.addAll(eClass.parentNodes - eNode)
 
         if (joined.value == null) return
 
@@ -154,6 +172,7 @@ open class EGraph {
     }
 
     private fun propagateCongruence() {
+        println("Propagating congruence")
         val congruentNodeGroups = eNodes.groupBy { it.toHashKey }.values
         congruentNodeGroups.forEach { congruentNodes -> mergeAllNodes(congruentNodes) }
     }
